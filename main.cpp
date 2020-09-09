@@ -4,8 +4,7 @@
 using namespace std;
 int main () {
   ifstream fin("test.in");
-  std::string input( (std::istreambuf_iterator<char>(fin) ),
-                       (std::istreambuf_iterator<char>()    ) );
+  std::string input( (std::istreambuf_iterator<char>(fin) ), (std::istreambuf_iterator<char>()));
 
   Lexer lexer(input);
   vector<Token> tokens = lexer.allTokens();

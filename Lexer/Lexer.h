@@ -20,6 +20,7 @@ class Lexer {
       while (position < input.length()) {
         tokens.push_back(nextToken());
       }
+      if (tokens.back().type == EndOfInput) tokens.pop_back();
       return tokens;
     }
     Token nextToken () {
