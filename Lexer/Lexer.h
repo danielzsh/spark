@@ -1,6 +1,6 @@
 #include "FSM.h"
 #include "tokens.h"
-#include "CharUtils.h"
+#include "../Utils/CharUtils.h"
 #include <vector>
 #include <iostream>
 using namespace CharUtils;

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include "Lexer.h"
+#include "Lexer/Lexer.h"
 using namespace std;
 int main () {
   ifstream fin("test.in");
