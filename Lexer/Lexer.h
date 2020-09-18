@@ -1,10 +1,14 @@
+#pragma once
+
 #include "FSM.h"
 #include "tokens.h"
 #include "../Utils/CharUtils.h"
 #include <vector>
 #include <iostream>
+
 using namespace CharUtils;
 using namespace std;
+
 class Lexer {
   private:
     string input;
@@ -17,10 +21,14 @@ class Lexer {
     }
     vector<Token> allTokens () {
       vector<Token> tokens;
-      while (position < input.length()) {
-        tokens.push_back(nextToken());
-      }
-      if (tokens.back().type == EndOfInput) tokens.pop_back();
+      Token currentToken;
+      do {
+        currentToken = nextToken();
+        if (currentToken.type == EndOfInput) {
+          break;
+        }
+        tokens.push_back(currentToken);
+      } while (currentToken.type != EndOfInput);
       return tokens;
     }
     Token nextToken () {
@@ -49,7 +57,28 @@ class Lexer {
       if (isParenthesis(character)) {
         return recognizeParenthesis();
       }
-      throw "false";
+      if (character == '{') {
+        position++;
+        column++;
+        return *(new Token(LeftBracket, "{", line, column));
+      }
+      if (character == '}') {
+        position++;
+        column++;
+        return *(new Token(RightBracket, "}", line, column));
+      }
+      if (character == ';') {
+        position++;
+        column++;
+        return *(new Token(Semicolon, ";", line, column));
+      }
+      try {
+        std::string error = "Unrecognized";
+        throw error;
+      } catch (std::string error) {
+        std::cout << error;
+      }
+      throw "failed";
     }
     Token recognizeParenthesis() {
       char character = input[position];

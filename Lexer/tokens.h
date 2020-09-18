@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 enum TokenType {
   Identifier = 0,
@@ -22,26 +24,31 @@ enum TokenType {
   /// Parenthesis
   LeftParenthesis,      // (
   RightParenthesis,     // )
+  /// Brackets
+  LeftBracket,
+  RightBracket,
     
   /// Special tokens
-  EndOfInput
+  EndOfInput,
+  Semicolon
 };
 
 class Token {
    
   public:
     TokenType type;
-    string value;
+    std::string value;
     int line;
     int column;
-    Token(TokenType typePass, string valuePass, int linePass, int columnPass) {
+    Token() {};
+    Token(TokenType typePass, std::string valuePass, int linePass, int columnPass) {
       type = typePass;
       value = valuePass;
       line = linePass;
       column = columnPass;
     }
 };
-ostream& operator << (ostream& os, const Token& token) {
-  os << token.type << " " << token.value << " " << token.line << " " << token.column << endl;
+std::ostream& operator << (std::ostream& os, const Token& token) {
+  os << token.type << " " << token.value << " " << token.line << " " << token.column << std::endl;
   return os;
 }

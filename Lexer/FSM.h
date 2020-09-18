@@ -1,7 +1,11 @@
+#pragma once
+
 #include <iostream>
 #include <vector>
 #include <string>
+
 using namespace std;
+
 template <typename T>
 bool has (vector<T> vect, T query) {
   for (int i = 0; i < vect.size(); i++) {
@@ -9,6 +13,7 @@ bool has (vector<T> vect, T query) {
   }
   return false;
 }
+
 class FSM {
   private:
     vector<int> states;
