@@ -49,18 +49,15 @@ class Parser {
     AstNode* parseStatement() {
       AstNode* node;
       if (currentToken.type == LeftBracket) {
-        static Block block = parseBlock();
-        node = &block;
+        node = new Block(parseBlock());
         return node;
       }
       if (currentToken.type == Identifier) {
-        static class Assign assign = parseAssignment();
-        node = &assign;
+        node = new class Assign(parseAssignment());
         return node;
       }
       else {
-        static NoOp noOp;
-        node = &noOp;
+        node = new NoOp();
         return node;
       }
     }
@@ -99,31 +96,28 @@ class Parser {
       return node;
     }
     AstNode* parseFactor() {
-      static AstNode* node;
+      AstNode* node;
       Token token = currentToken;
       if (token.type == Plus) {
         eat(Plus);
-        static AstNode* factor = parseFactor();
-        static UnOp unOp(token, factor);
-        node = &unOp;
+        AstNode* factor = parseFactor();
+        node = new UnOp(token, factor);
         return node;
       }
       else if (token.type == Minus) {
         eat(Minus);
-        static AstNode* factor = parseFactor();
-        static UnOp unOp(token, factor);
-        node = &unOp;
+        AstNode* factor = parseFactor();
+        node = new UnOp(token, factor);
         return node;
       }
       else if (token.type == Number) {
         eat(Number);
-        static Num factor(token);
-        node = &factor;
+        node = new Num(token);
         return node;
       }
       else if (token.type == LeftParenthesis) {
         eat(LeftParenthesis);
-        static AstNode* expr = parseExpression();
+        AstNode* expr = parseExpression();
         node = expr;
         eat(RightParenthesis);
         return node;

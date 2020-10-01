@@ -19,6 +19,12 @@ class Lexer {
     Lexer(string inputPass) {
       input = inputPass;
     }
+    int getLine () {
+      return line;
+    }
+    int getCol () {
+      return column;
+    }
     vector<Token> allTokens () {
       vector<Token> tokens;
       Token currentToken;
