@@ -24,7 +24,7 @@ int main () {
      block = parser.parseProgram();
   } catch (string error) {
     cout << error;
-    return -1;
+    return 1;
   }
   for (int i = 0; i < block.size(); i++) {
     cout << block[i]->print() << endl;
