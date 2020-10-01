@@ -10,12 +10,8 @@ class Parser {
       currentToken = lexer.nextToken();
     }
     void error () {
-      try {
         std::string error = "Invalid syntax";
         throw error;
-      } catch (std::string error) {
-        std::cout << error;
-      }
     } 
     void eat (TokenType type) {
       if (currentToken.type == type) currentToken = lexer.nextToken();
