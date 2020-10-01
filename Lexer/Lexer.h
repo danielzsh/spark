@@ -78,13 +78,8 @@ class Lexer {
         column++;
         return *(new Token(Semicolon, ";", line, column));
       }
-      try {
         std::string error = "Unrecognized";
         throw error;
-      } catch (std::string error) {
-        std::cout << error;
-      }
-      throw "failed";
     }
     Token recognizeParenthesis() {
       char character = input[position];
@@ -116,11 +111,8 @@ class Lexer {
         default:
           break;
       }
-      try {throw "operation not found";}
-      catch (string error) {
-        cout << "error: " << error;
-      }
-      throw "error: invalid";
+      std::string error = "operation not found";
+      throw error;
     }
     Token recognizeArithmeticOperator () {
       char character = input[position];
@@ -142,11 +134,8 @@ class Lexer {
         default:
           break;
       }
-      try {throw "operation not found";}
-      catch (string error) {
-        cout << "error: " << error;
-      }
-      return *(new Token(Div, "/", line, column));
+      std::string error = "operation not found";
+      throw error;
     }
     Token recognizeIdentifier() {
       string identifier = "";
