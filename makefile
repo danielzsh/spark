@@ -1,3 +1,3 @@
-run:
-    chmod 755 run.sh
-    ./run.sh
+run: 
+	chmod 755 run.sh
+	./run.sh
