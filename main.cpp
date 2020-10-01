@@ -15,6 +15,7 @@ int main () {
   vector<Token> tokens = lexer.allTokens();
 
   // tokens.size() is a long unsigned int, use to prevent -Wall or -Wextra warnings
+  cout << "Lexer tokens:" << endl;
   for (long unsigned int i = 0; i < tokens.size(); i++) {
     cout << tokens[i];
   }
@@ -26,6 +27,7 @@ int main () {
     cout << error;
     return 1;
   }
+  cout << "Parser blocks:" << endl;
   for (int i = 0; i < block.size(); i++) {
     cout << block[i]->print() << endl;
   }
