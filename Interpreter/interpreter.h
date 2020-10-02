@@ -11,8 +11,8 @@ public:
 	~Interpreter();
 	void visit(AstNode* node) {
 		if (node->print() == "Block") visit_Block(*static_cast<Block*>(node));
-		else if (node->print() == "Assign") visit_Assign(*static_cast<Assign*>(node));
-		else if (node->print() == "NoOp") visit_NoOp(*static_cast<NoOp*>(node));
+		else if (node->print() == "Assign") visit_Assign(*static_cast<class Assign*>(node));
+		else if (node->print() == "NoOp") visit_NoOp();
 		else if (node->print() == "Var") visit_Var(*static_cast<Var*>(node));
 		else {
 			std::string error = "Error: not recognized";
