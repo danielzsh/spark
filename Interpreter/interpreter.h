@@ -7,7 +7,7 @@ class Interpreter
 public:
 	std::map<std::string, int> GLOBAL_SCOPE;
 	Interpreter(input) : parser(input) {
-	};
+	}
 	~Interpreter();
 	void visit(AstNode* node) {
 		if (node->print() == "Block") visit_Block();
@@ -33,7 +33,7 @@ public:
 	int visit_UnOp(UnOp unOp) {
 		Token op = unOp.op.type;
 		if (op.type == Plus) return visit_Int(unOp.expr);
-		else return 0 - visit(unOp.expr);
+		else return 0 - visit_Int(unOp.expr);
 	}
 	void visit_Block(Block block) {
 		for (AstNode* child : block.children) {
