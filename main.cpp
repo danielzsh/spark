@@ -33,7 +33,13 @@ int main () {
     cout << block[i]->print() << endl;
   }
   Interpreter interpreter(input);
-  interpreter.interpret();
+  try {
+      interpreter.interpret();
+  }
+  catch (std::string error) {
+      cout << error;
+  }
+  
   cout << "Variables: " << endl;
   cout << interpreter.GLOBAL_SCOPE.size();
 }
