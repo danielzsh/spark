@@ -41,5 +41,5 @@ int main () {
   }
   
   cout << "Variables: " << endl;
-  cout << interpreter.GLOBAL_SCOPE.size();
+  cout << interpreter.GLOBAL_SCOPE.size() << endl;
 }
