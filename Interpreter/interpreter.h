@@ -13,7 +13,6 @@ public:
 		if (node->print() == "Block") visit_Block(*static_cast<Block*>(node));
 		else if (node->print() == "Assign") visit_Assign(*static_cast<class Assign*>(node));
 		else if (node->print() == "NoOp") visit_NoOp();
-		else if (node->print() == "Var") visit_Var(*static_cast<Var*>(node));
 		else {
 			std::string error = "Error: not recognized";
 			throw error;
@@ -21,7 +20,8 @@ public:
 	}
 	int visit_Int(AstNode* node) {
 		if (node->print() == "Num") return visit_Num(*static_cast<Num*>(node));
-		else if (node->print == "UnOp") return visit_UnOp(*static_cast<UnOp*>(node));
+		else if (node->print() == "UnOp") return visit_UnOp(*static_cast<UnOp*>(node));
+		else if (node->print() == "Var") return visit_Var(*static_cast<Var*>(node));
 		else {
 			std::string error = "Error: not recognized";
 			throw error;
@@ -31,8 +31,8 @@ public:
 		return num.value;
 	}
 	int visit_UnOp(UnOp unOp) {
-		Token op = unOp.op.type;
-		if (op.type == Plus) return visit_Int(unOp.expr);
+		TokenType op = unOp.op.type;
+		if (op == Plus) return visit_Int(unOp.expr);
 		else return 0 - visit_Int(unOp.expr);
 	}
 	void visit_Block(Block block) {
@@ -44,7 +44,7 @@ public:
 		string var_name = assign.var.value;
 		GLOBAL_SCOPE.insert(pair<std::string, int>(name, visit_Int(assign.right)));
 	}
-	void visit_Var(Var var) {
+	int visit_Var(Var var) {
 		if (GLOBAL_SCOPE.find(var.value) != GLOBAL_SCOPE.end()) return GLOBAL_SCOPE[var.value];
 		else {
 			std::string error = "Error: variable not found";
