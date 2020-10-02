@@ -6,7 +6,6 @@ class Parser {
     Lexer lexer;
     Token currentToken;
   public:
-    Parser() {}
     Parser (std::string input) : lexer(input) {
       currentToken = lexer.nextToken();
     }
