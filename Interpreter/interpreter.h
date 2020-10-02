@@ -22,6 +22,7 @@ public:
 		if (node->print() == "Num") return visit_Num(*static_cast<Num*>(node));
 		else if (node->print() == "UnOp") return visit_UnOp(*static_cast<UnOp*>(node));
 		else if (node->print() == "Var") return visit_Var(*static_cast<Var*>(node));
+		else if (node->print() == "BinOp") return visit_BinOp(*static_cast<BinOp*>(node));
 		else {
 			std::string error = "Error: not recognized";
 			throw error;
