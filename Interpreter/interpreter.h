@@ -30,6 +30,12 @@ public:
 	int visit_Num(Num num) {
 		return num.value;
 	}
+	int visit_BinOp(BinOp binOp) {
+		if (binOp.op.type == Plus) return visit_Int(left) + visit_Int(right);
+		else if (binOp.op.type == Minus) return visit_Int(left) - visit_Int(right);
+		else if (binOp.op.type == Times) return visit_Int(left) * visit_Int(right);
+		if (binOp.op.type == Div) return visit_Int(left) / visit_Int(right);
+	}
 	int visit_UnOp(UnOp unOp) {
 		TokenType op = unOp.op.type;
 		if (op == Plus) return visit_Int(unOp.expr);

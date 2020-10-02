@@ -13,11 +13,10 @@ class AstNode {
   virtual std::string print () = 0;
 };
 class BinOp : public AstNode {
-  private:
+  public:
   AstNode* left;
   Token op;
   AstNode* right;
-  public:
   BinOp () {};
   BinOp (AstNode* leftPass, Token opPass, AstNode* rightPass) {
     left = leftPass;
