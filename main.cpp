@@ -6,7 +6,7 @@
 
 // Tip: Don't use using namespace, see https://bit.ly/aaron_help_CPP_GUIDELINE_1
 using namespace std;
-void interpret(string input) {
+int interpret(string input) {
     Lexer lexer(input);
 
     vector<Token> tokens = lexer.allTokens();
@@ -35,13 +35,15 @@ void interpret(string input) {
     }
     catch (std::string error) {
         cout << error;
+        return 1;
     }
 
     cout << "Variables: " << endl;
     cout << interpreter.GLOBAL_SCOPE.size() << endl;
+    return 0;
 }
 int main () {
   ifstream cin("test.in");
   std::string input((std::istreambuf_iterator<char>(cin)), (std::istreambuf_iterator<char>()));
-  interpret(input);
+  return interpret(input);
 }
