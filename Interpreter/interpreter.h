@@ -42,7 +42,7 @@ public:
 	}
 	void visit_Assign(class Assign assign) {
 		string var_name = assign.var.value;
-		GLOBAL_SCOPE.insert(pair<std::string, int>(name, visit_Int(assign.right)));
+		GLOBAL_SCOPE.insert(pair<std::string, int>(var_name, visit_Int(assign.right)));
 	}
 	int visit_Var(Var var) {
 		if (GLOBAL_SCOPE.find(var.value) != GLOBAL_SCOPE.end()) return GLOBAL_SCOPE[var.value];
