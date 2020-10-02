@@ -8,7 +8,7 @@ public:
 	std::map<std::string, int> GLOBAL_SCOPE;
 	Interpreter(std::string input) : parser(input) {
 	}
-	~Interpreter();
+	~Interpreter() {}
 	void visit(AstNode* node) {
 		if (node->print() == "Block") visit_Block(*static_cast<Block*>(node));
 		else if (node->print() == "Assign") visit_Assign(*static_cast<class Assign*>(node));
