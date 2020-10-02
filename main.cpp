@@ -39,11 +39,13 @@ int interpret(string input) {
     }
 
     cout << "Variables: " << endl;
-    cout << interpreter.GLOBAL_SCOPE.size() << endl;
+    for (auto const& pair : interpreter.GLOBAL_SCOPE) {
+        cout << pair.first << " " << pair.second << endl;
+    }
     return 0;
 }
 int main () {
-  ifstream cin("test.in");
+  ifstream cin("test.txt");
   std::string input((std::istreambuf_iterator<char>(cin)), (std::istreambuf_iterator<char>()));
   return interpret(input);
 }
