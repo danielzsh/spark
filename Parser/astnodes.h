@@ -35,8 +35,8 @@ class BinOp : public AstNode {
 class Num : public AstNode {
   private:
     Token token;
-    int value;
   public:
+    int value;
     Num (Token t) {
       token = t;
       value = std::stoi(t.value); // TODO add support for using E/e for exponents
@@ -47,10 +47,9 @@ class Num : public AstNode {
   } 
 };
 class UnOp : public AstNode {
-  private:
-    Token op;
-    AstNode* expr;
   public:
+    AstNode* expr;
+    Token op;
     UnOp (Token opPass, AstNode* exprPass) {
       op = opPass;
       expr = exprPass;
@@ -61,9 +60,8 @@ class UnOp : public AstNode {
   } 
 };
 class Block : public AstNode {
-  private:
-    std::vector<AstNode*> children;
   public:
+    std::vector<AstNode*> children;
     void append (AstNode* node) {
       children.push_back(node);
     }
@@ -79,10 +77,9 @@ class Block : public AstNode {
   } 
 };
 class Var : public AstNode {
-  private:
+  public:
     Token token;
     std::string value;
-  public:
     Var () {}
     Var (Token t) {
       token = t;
@@ -94,11 +91,10 @@ class Var : public AstNode {
   } 
 };
 class Assign : public AstNode {
-  private:
+  public:
     Var var;
     Token op;
     AstNode* right;
-  public:
     Assign(Var left, Token t, AstNode* r) {
       var = left;
       op = t;

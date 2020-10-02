@@ -2,6 +2,7 @@
 #include <fstream>
 #include "Parser/parser.h"
 #include "Lexer/Lexer.h"
+#include "Interpreter/interpreter.h"
 
 // Tip: Don't use using namespace, see https://bit.ly/aaron_help_CPP_GUIDELINE_1
 using namespace std;
@@ -31,4 +32,8 @@ int main () {
   for (int i = 0; i < block.size(); i++) {
     cout << block[i]->print() << endl;
   }
+  Interpreter interpreter(input);
+  interpreter.interpret();
+  cout << "Variables: " << endl;
+  cout << interpreter.GLOBAL_SCOPE.size();
 }
