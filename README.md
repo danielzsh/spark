@@ -1,5 +1,5 @@
 # Welcome to MakeALanguage!
-This is my attempt to create a language in C++ using Faical Tchirou and Ruslan Spivak's articles.<br>
+This is my attempt to create a language in C++ using Faical Tchirou and Ruslan Spivak's tutorials.<br>
 ## How to run this code:
 Click on [this link](https://repl.it/@DanielZhu5/MakeALanguage#test.txt).<br>
 This is the input file. Once you have finished editing its content, click run. The output will be the following:<br>
