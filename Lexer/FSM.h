@@ -21,6 +21,7 @@ class FSM {
     int initialState;
     int (*nextState)(int, char);
   public:
+    int endState;
     FSM(vector<int> statesPass, vector<int> acceptingStatesPass, int initialStatePass, int nextStatePass(int, char)) {
       states = statesPass;
       acceptingStates = acceptingStatesPass;
@@ -40,6 +41,7 @@ class FSM {
         val += input[i];
         currentState = NextState;
       }
+      endState = currentState;
       return val;
     } 
 

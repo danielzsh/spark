@@ -40,12 +40,18 @@ class Token {
     std::string value;
     int line;
     int column;
-    Token() {};
+    Token() {}
     Token(TokenType typePass, std::string valuePass, int linePass, int columnPass) {
       type = typePass;
       value = valuePass;
       line = linePass;
       column = columnPass;
+    }
+    void set(TokenType typePass, std::string valuePass, int linePass, int columnPass) {
+        type = typePass;
+        value = valuePass;
+        line = linePass;
+        column = columnPass;
     }
 };
 std::ostream& operator << (std::ostream& os, const Token& token) {

@@ -47,7 +47,8 @@ class Lexer {
         position++;
       }
       if (position >= input.length()) {
-        return *(new Token(EndOfInput, "", line, column));
+        Token token(EndOfInput, "", line, column);
+        return token;
       }
       char character = input[position];
       if (isLetter(character)) return recognizeIdentifier();
@@ -66,17 +67,20 @@ class Lexer {
       if (character == '{') {
         position++;
         column++;
-        return *(new Token(LeftBracket, "{", line, column));
+        Token token(LeftBracket, "{", line, column);
+        return token;
       }
       if (character == '}') {
         position++;
         column++;
-        return *(new Token(RightBracket, "}", line, column));
+        Token token(RightBracket, "}", line, column);
+        return token;
       }
       if (character == ';') {
         position++;
         column++;
-        return *(new Token(Semicolon, ";", line, column));
+        Token token(Semicolon, ";", line, column);
+        return token;
       }
         std::string error = "Unrecognized";
         throw error;
@@ -85,8 +89,12 @@ class Lexer {
       char character = input[position];
       position++;
       column++;
-      if (character == '(') return *(new Token(LeftParenthesis, "(", line, column));
-      return *(new Token(RightParenthesis, ")", line, column));
+      if (character == '(') {
+          Token token(LeftParenthesis, "(", line, column);
+          return token;
+      }
+      Token token(RightParenthesis, ")", line, column);
+      return token;
     }
     Token recognizeComparisonOperator() {
       char character = input[position];
@@ -99,20 +107,22 @@ class Lexer {
         column++;
       }
       switch (character) {
+        Token token;
         case '>':
-          return (isLookaheadEqualSymbol) ? *(new Token(GreaterThanOrEqual, ">=", line, column)) : *(new Token(GreaterThan, ">", line, column));
+          return (isLookaheadEqualSymbol) ? token.set(GreaterThanOrEqual, ">=", line, column) : token.set(GreaterThan, ">", line, column);
           break;
         case '<':
-          return (isLookaheadEqualSymbol) ? *(new Token(LessThanOrEqual, "<=", line, column)) : *(new Token(LessThan, "<", line, column));
+          return (isLookaheadEqualSymbol) ? token.set(LessThanOrEqual, "<=", line, column) : token.set(LessThan, "<", line, column);
           break;
         case '=':
-          return (isLookaheadEqualSymbol) ? *(new Token(Equal, "==", line, column)) : *(new Token(Assign, "=", line, column));
+          return (isLookaheadEqualSymbol) ? token.set(Equal, "==", line, column) : token.set(Assign, "=", line, column);
           break;
         default:
+          std::string error = "operation not found";
+          throw error;
           break;
       }
-      std::string error = "operation not found";
-      throw error;
+      return token;
     }
     Token recognizeArithmeticOperator () {
       char character = input[position];
@@ -120,16 +130,20 @@ class Lexer {
       column++;
       switch (character) {
         case '+':
-          return *(new Token(Plus, "+", line, column));
+          Token token(Plus, "+", line, column);
+          return token;
           break;
         case '-':
-          return *(new Token(Minus, "-", line, column));
+          Token token(Minus, "-", line, column);
+          return token;
           break;
         case '*':
-          return *(new Token(Times, "*", line, column));
+          Token token(Times, "*", line, column);
+          return token;
           break;
         case '/':
-          return *(new Token(Div, "/", line, column));
+          Token token(Div, "/", line, column);
+          return token;
           break;
         default:
           break;
@@ -148,7 +162,8 @@ class Lexer {
         position++;
         column++;
       }
-      return *(new Token(Identifier, identifier, line, column));
+      Token token(Identifier, identifier, line, column);
+      return token;
     }
     Token recognizeNumber () {
       FSM fsm = buildNumberRecognizer();
@@ -156,7 +171,8 @@ class Lexer {
       string fsmOutput = fsm.run(fsmInput);
       position += fsmOutput.length();
       column += fsmOutput.length();
-      return *(new Token(Number,fsmOutput, line, column));
+      Token token(Number, fsmOutput, line, column);
+      return token;
     }
     FSM buildNumberRecognizer () {
       enum State {
@@ -169,7 +185,9 @@ class Lexer {
         NumberWithExponent,
         NoNextState = 0
       };
-      FSM fsm(*(new vector<int>{Initial, Integer, BeginNumberWithFractionalPart, NumberWithFractionalPart, BeginNumberWithExponent, BeginNumberWithSignedExponent, NumberWithExponent}), *(new vector<int>{Integer, NumberWithFractionalPart, NumberWithExponent}), 1, [] (int currentState, char character) -> int {
+      vector<int> states{ Initial, Integer, BeginNumberWithFractionalPart, NumberWithFractionalPart, BeginNumberWithExponent, BeginNumberWithSignedExponent, NumberWithExponent };
+      vector<int> acceptingStates{ Integer, NumberWithFractionalPart, NumberWithExponent };
+      FSM fsm(states, acceptingStates, 1, [] (int currentState, char character) -> int {
         switch (currentState) {
           case Initial:
             if (isDigit(character)) {
