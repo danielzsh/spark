@@ -106,8 +106,8 @@ class Lexer {
         position++;
         column++;
       }
+      Token token;
       switch (character) {
-        Token token;
         case '>':
             if (isLookaheadEqualSymbol) {
                 token.set(GreaterThanOrEqual, ">=", line, column);
