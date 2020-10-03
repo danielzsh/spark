@@ -109,41 +109,56 @@ class Lexer {
       switch (character) {
         Token token;
         case '>':
-          return (isLookaheadEqualSymbol) ? token.set(GreaterThanOrEqual, ">=", line, column) : token.set(GreaterThan, ">", line, column);
+            if (isLookaheadEqualSymbol) {
+                token.set(GreaterThanOrEqual, ">=", line, column);
+          }
+            else token.set(GreaterThan, ">", line, column);
+            return token;
           break;
         case '<':
-          return (isLookaheadEqualSymbol) ? token.set(LessThanOrEqual, "<=", line, column) : token.set(LessThan, "<", line, column);
+            if (isLookaheadEqualSymbol) {
+                token.set(LessThanOrEqual, "<=", line, column);
+            }
+            else token.set(LessThan, "<", line, column);
+            return token;
           break;
         case '=':
-          return (isLookaheadEqualSymbol) ? token.set(Equal, "==", line, column) : token.set(Assign, "=", line, column);
+            if (isLookaheadEqualSymbol) {
+                token.set(Equal, "==", line, column);
+            }
+            else token.set(Assign, "=", line, column);
+            return token;
           break;
         default:
           std::string error = "operation not found";
           throw error;
           break;
       }
-      return token;
     }
     Token recognizeArithmeticOperator () {
       char character = input[position];
       position++;
       column++;
       switch (character) {
-        case '+':
+      case '+': {
           Token token(Plus, "+", line, column);
           return token;
-          break;
-        case '-':
+      }
+              break;
+      case '-': {
           Token token(Minus, "-", line, column);
           return token;
-          break;
-        case '*':
+      }
+              break;
+      case '*': {
           Token token(Times, "*", line, column);
           return token;
+      }
           break;
-        case '/':
+      case '/': {
           Token token(Div, "/", line, column);
           return token;
+      }
           break;
         default:
           break;
