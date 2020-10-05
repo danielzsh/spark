@@ -5,7 +5,7 @@
 class Interpreter
 {
 public:
-	std::map<std::string, int> GLOBAL_SCOPE;
+	std::map<std::string, double> GLOBAL_SCOPE;
 	Interpreter(std::string input) : parser(input) {
 	}
 	~Interpreter() {}
@@ -18,7 +18,7 @@ public:
 			throw error;
 		}
 	}
-	int visit_Int(AstNode* node) {
+	double visit_Int(AstNode* node) {
 		if (node->print() == "Num") return visit_Num(*static_cast<Num*>(node));
 		else if (node->print() == "UnOp") return visit_UnOp(*static_cast<UnOp*>(node));
 		else if (node->print() == "Var") return visit_Var(*static_cast<Var*>(node));
@@ -28,10 +28,10 @@ public:
 			throw error;
 		}
 	}
-	int visit_Num(Num num) {
+	double visit_Num(Num num) {
 		return num.value;
 	}
-	int visit_BinOp(BinOp binOp) {
+	double visit_BinOp(BinOp binOp) {
 		if (binOp.op.type == Plus) return visit_Int(binOp.left) + visit_Int(binOp.right);
 		else if (binOp.op.type == Minus) return visit_Int(binOp.left) - visit_Int(binOp.right);
 		else if (binOp.op.type == Times) return visit_Int(binOp.left) * visit_Int(binOp.right);
@@ -41,7 +41,7 @@ public:
 			throw error;
 		}
 	}
-	int visit_UnOp(UnOp unOp) {
+	double visit_UnOp(UnOp unOp) {
 		TokenType op = unOp.op.type;
 		if (op == Plus) return visit_Int(unOp.expr);
 		else return 0 - visit_Int(unOp.expr);
@@ -55,7 +55,7 @@ public:
 		string var_name = assign.var.value;
 		GLOBAL_SCOPE[var_name] = visit_Int(assign.right);
 	}
-	int visit_Var(Var var) {
+	double visit_Var(Var var) {
 		if (GLOBAL_SCOPE.find(var.value) != GLOBAL_SCOPE.end()) return GLOBAL_SCOPE[var.value];
 		else {
 			std::string error = "Error: variable not found";

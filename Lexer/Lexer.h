@@ -19,7 +19,9 @@ class Lexer {
     map<string, TokenType> keywords = {
         {"main", MAIN},
         {"int", INT},
-        {"real", REAL}
+        {"real", REAL},
+        {"vars", VARS},
+        {"program", PROGRAM}
     };
   public:
     Lexer(string inputPass) {
@@ -87,6 +89,18 @@ class Lexer {
         column++;
         Token token(Semicolon, ";", line, column);
         return token;
+      }
+      if (character == ':') {
+          position++;
+          column++;
+          Token token(Colon, ":", line, column);
+          return token;
+      }
+      if (character == ',') {
+          position++;
+          column++;
+          Token token(Comma, ",", line, column);
+          return token;
       }
         std::string error = "Unrecognized";
         throw error;
@@ -162,6 +176,12 @@ class Lexer {
       }
           break;
       case '/': {
+          char lookahead = (position + 1 < input.length()) ? input[position + 1] : '\0';
+          if (lookahead != '\0' && lookahead == '/') {
+              position++;
+              column++;
+              Token token(IntDiv, "//", line, column);
+          }
           Token token(Div, "/", line, column);
           return token;
       }
@@ -196,7 +216,11 @@ class Lexer {
       string fsmOutput = fsm.run(fsmInput);
       position += fsmOutput.length();
       column += fsmOutput.length();
-      Token token(Number, fsmOutput, line, column);
+      if (fsm.endState == 4) {
+          Token token(Real, fsmOutput, line, column);
+          return token;
+      }
+      Token token(Integer, fsmOutput, line, column);
       return token;
     }
     FSM buildNumberRecognizer () {
