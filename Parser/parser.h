@@ -17,12 +17,8 @@ class Parser {
       if (currentToken.type == type) currentToken = lexer.nextToken();
       else error();
     }
-    void eat (TokenType type, string value) {
-      if (currentToken.type == type && currentToken.value == value) currentToken = lexer.nextToken();
-      else error();
-    }
     Block parseProgram() {
-      eat(Identifier, "main");
+      eat(MAIN);
       eat(LeftParenthesis);
       eat(RightParenthesis);
       return parseBlock();
@@ -119,8 +115,7 @@ class Parser {
         return node;
       }
       else {
-        Var var = parseVariable();
-        node = &var;
+        node = new Var(parseVariable());
         return node;
       }
     }

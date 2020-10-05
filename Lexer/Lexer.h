@@ -5,16 +5,22 @@
 #include "../Utils/CharUtils.h"
 #include <vector>
 #include <iostream>
-
+#include <map>
+#include <algorithm>
 using namespace CharUtils;
 using namespace std;
 
 class Lexer {
   private:
     string input;
-    int position = 0;
+    unsigned int position = 0;
     int line = 0;
     int column = 0;
+    map<string, TokenType> keywords = {
+        {"main", MAIN},
+        {"int", INT},
+        {"real", REAL}
+    };
   public:
     Lexer(string inputPass) {
       input = inputPass;
@@ -176,6 +182,10 @@ class Lexer {
         identifier += character;
         position++;
         column++;
+      }
+      if (keywords.count(identifier)) {
+          Token token(keywords[identifier], identifier, line, column);
+          return token;
       }
       Token token(Identifier, identifier, line, column);
       return token;

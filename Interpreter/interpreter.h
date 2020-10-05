@@ -35,7 +35,11 @@ public:
 		if (binOp.op.type == Plus) return visit_Int(binOp.left) + visit_Int(binOp.right);
 		else if (binOp.op.type == Minus) return visit_Int(binOp.left) - visit_Int(binOp.right);
 		else if (binOp.op.type == Times) return visit_Int(binOp.left) * visit_Int(binOp.right);
-		if (binOp.op.type == Div) return visit_Int(binOp.left) / visit_Int(binOp.right);
+		else if (binOp.op.type == Div) return visit_Int(binOp.left) / visit_Int(binOp.right);
+		else {
+			std::string error("Error: BinOp operation not recognized.");
+			throw error;
+		}
 	}
 	int visit_UnOp(UnOp unOp) {
 		TokenType op = unOp.op.type;
