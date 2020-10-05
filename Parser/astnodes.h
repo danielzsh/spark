@@ -35,10 +35,11 @@ class Num : public AstNode {
   private:
     Token token;
   public:
-    int value;
+    double value;
     Num (Token t) {
       token = t;
-      value = std::stoi(t.value); // TODO add support for using E/e for exponents
+      if (t.type == Integer) value = std::stoi(t.value); // TODO add support for using E/e for exponents
+      else value = std::stod(t.value);
     }
     std::string print () {
     std::string s = "Num";
@@ -58,23 +59,7 @@ class UnOp : public AstNode {
     return s;
   } 
 };
-class Block : public AstNode {
-  public:
-    std::vector<AstNode*> children;
-    void append (AstNode* node) {
-      children.push_back(node);
-    }
-    AstNode* operator [] (int i) {
-      return children[i];
-    }
-    int size () {
-      return children.size();
-    }
-    std::string print () {
-    std::string s = "Block";
-    return s;
-  } 
-};
+
 class Var : public AstNode {
   public:
     Token token;
@@ -112,6 +97,50 @@ class NoOp : public AstNode {
     std::string s = "NoOp";
     return s;
   } 
+};
+class Type : public AstNode {
+public:
+    Token token;
+    string type;
+    Type() {}
+    Type(Token t) : token(t) {
+        type = t.value;
+    }
+    std::string print() {
+        std::string s = "Type";
+        return s;
+    }
+};
+class VarDecl : public AstNode {
+public:
+    Var var;
+    Type type;
+    VarDecl() {}
+    VarDecl(Type t, Var v) : var(v), type(t) {};
+    std::string print() {
+        std::string s = "VarDecl";
+        return s;
+    }
+};
+class Block : public AstNode {
+public:
+    std::vector<AstNode*> children;
+    std::vector<VarDecl> declarations;
+    Block () {}
+    Block(std::vector<VarDecl> d) : declarations(d) {}
+    void append(AstNode* node) {
+        children.push_back(node);
+    }
+    AstNode* operator [] (int i) {
+        return children[i];
+    }
+    int size() {
+        return children.size();
+    }
+    std::string print() {
+        std::string s = "Block";
+        return s;
+    }
 };
 
 

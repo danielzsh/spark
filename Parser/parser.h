@@ -9,13 +9,13 @@ class Parser {
     Parser (std::string input) : lexer(input) {
       currentToken = lexer.nextToken();
     }
-    void error () {
-        std::string error = "Invalid syntax";
+    void error (TokenType expected, TokenType received) {
+        std::string error = "Invalid syntax: Expected " + std::to_string(expected) + ", got " + std::to_string(received);
         throw error;
     } 
     void eat (TokenType type) {
       if (currentToken.type == type) currentToken = lexer.nextToken();
-      else error();
+      else error(type, currentToken.type);
     }
     Block parseProgram() {
       eat(MAIN);
@@ -24,9 +24,11 @@ class Parser {
       return parseBlock();
 
     }
-    Block parseBlock() {
-      Block block;
+    Block parseBlock() {  
       eat(LeftBracket);
+      Block block(parseDeclarations());
+      eat(PROGRAM);
+      eat(Colon);
       AstNode* node = parseStatement();
       block.append(node);
       while (currentToken.type == Semicolon) {
@@ -34,9 +36,47 @@ class Parser {
         node = parseStatement();
         block.append(node);
       }
-      if (currentToken.type == Identifier) error();
       eat(RightBracket);
       return block;
+    }
+    std::vector<VarDecl> parseDeclarations() {
+        std::vector<VarDecl> decl;
+        if (currentToken.type == VARS) {
+            eat(VARS);
+            eat(Colon);
+            while (currentToken.type == INT || currentToken.type == REAL)
+            {
+                std::vector<VarDecl> line = parseVarDeclarations();
+                decl.insert(decl.end(), line.begin(), line.end());
+            }     
+        }
+        return decl;
+    }
+    std::vector<VarDecl> parseVarDeclarations() {
+        Type type = parseType();
+        eat(Colon);
+        std::vector<Var> declarations(1, Var(currentToken));
+        eat(Identifier);
+        while (currentToken.type == Comma)
+        {
+            eat(Comma);
+            declarations.push_back(Var(currentToken));
+            eat(Identifier);
+        }
+        eat(Semicolon);
+        std::vector<VarDecl> var_decl(declarations.size());
+        for (unsigned int i = 0; i < var_decl.size(); i++) {
+            VarDecl varDecl(type, declarations[i]);
+            var_decl[i] = varDecl;
+        }
+        return var_decl;
+    }
+    Type parseType() {
+        Token token = currentToken;
+        if (currentToken.type == INT) eat(INT);
+        else eat(REAL);
+        Type node = Type(token);
+        return node;
     }
     AstNode* parseStatement() {
       AstNode* node;
@@ -102,10 +142,15 @@ class Parser {
         node = new UnOp(token, factor);
         return node;
       }
-      else if (token.type == Number) {
-        eat(Number);
+      else if (token.type == Integer) {
+        eat(Integer);
         node = new Num(token);
         return node;
+      }
+      else if (token.type == Real) {
+          eat(Real);
+          node = new Num(token);
+          return node;
       }
       else if (token.type == LeftParenthesis) {
         eat(LeftParenthesis);

@@ -3,13 +3,15 @@
 #include <string>
 enum TokenType {
   Identifier = 0,
-  Number,
+  Integer,
+  Real,
     
   /// Arithmetic operators
   Plus,                  // +
   Minus,                 // -
   Times,                 // *
   Div,                   // /
+  IntDiv, // //
     
   /// Comparison operators
   GreaterThan,          // >
@@ -34,7 +36,12 @@ enum TokenType {
   // Keywords
     MAIN,
     INT,
-    REAL
+    REAL,
+    VARS,
+    PROGRAM,
+    // Miscellaneous
+    Colon,
+    Comma
 };
 
 class Token {
