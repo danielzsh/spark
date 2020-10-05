@@ -30,17 +30,22 @@ enum TokenType {
     
   /// Special tokens
   EndOfInput,
-  Semicolon
+  Semicolon,
+  // Keywords
+    MAIN,
+    INT,
+    REAL
 };
 
 class Token {
    
   public:
-    TokenType type;
-    std::string value;
-    int line;
-    int column;
-    Token() {}
+    TokenType type = EndOfInput;
+    std::string value = "";
+    int line = -1;
+    int column = -1;
+    Token() {
+    }
     Token(TokenType typePass, std::string valuePass, int linePass, int columnPass) {
       type = typePass;
       value = valuePass;
