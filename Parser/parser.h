@@ -31,8 +31,8 @@ class Parser {
       eat(Colon);
       AstNode* node = parseStatement();
       block.append(node);
-      while (currentToken.type == Semicolon) {
-        eat(Semicolon);
+      while (currentToken.type == Semicolon || node->print() == "Block") {
+        if (currentToken.type == Semicolon) eat(Semicolon);
         node = parseStatement();
         block.append(node);
       }
