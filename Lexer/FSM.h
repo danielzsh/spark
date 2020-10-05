@@ -31,7 +31,7 @@ class FSM {
     string run (string input) {
       int currentState = initialState;
       string val = "";
-      int i = 0; 
+      unsigned int i = 0; 
       for (; i < input.length(); i++) {
         char character = input[i];
         int NextState = nextState(currentState, character);

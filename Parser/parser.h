@@ -119,8 +119,7 @@ class Parser {
         return node;
       }
       else {
-        Var var = parseVariable();
-        node = &var;
+        node = new Var(parseVariable());
         return node;
       }
     }

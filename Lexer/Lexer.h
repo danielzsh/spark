@@ -12,7 +12,7 @@ using namespace std;
 class Lexer {
   private:
     string input;
-    int position = 0;
+    unsigned int position = 0;
     int line = 0;
     int column = 0;
   public:
