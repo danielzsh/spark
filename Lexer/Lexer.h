@@ -176,14 +176,18 @@ class Lexer {
       }
           break;
       case '/': {
-          char lookahead = (position + 1 < input.length()) ? input[position + 1] : '\0';
+          char lookahead = (position < input.length()) ? input[position] : '\0';
           if (lookahead != '\0' && lookahead == '/') {
               position++;
               column++;
               Token token(IntDiv, "//", line, column);
+              return token;
           }
-          Token token(Div, "/", line, column);
-          return token;
+          else {
+              Token token(Div, "/", line, column);
+              return token;
+          }
+          
       }
           break;
         default:
