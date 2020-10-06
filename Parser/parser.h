@@ -31,8 +31,8 @@ class Parser {
       eat(Colon);
       AstNode* node = parseStatement();
       block.append(node);
-      while (currentToken.type == Semicolon) {
-        eat(Semicolon);
+      while (currentToken.type == Semicolon || node->print() == "Block") {
+        if (currentToken.type == Semicolon) eat(Semicolon);
         node = parseStatement();
         block.append(node);
       }
@@ -118,10 +118,11 @@ class Parser {
     }
     AstNode* parseTerm() {
       AstNode* node = parseFactor();
-      while (currentToken.type == Times || currentToken.type == Div) {
+      while (currentToken.type == Times || currentToken.type == Div || currentToken.type == IntDiv) {
         Token token = currentToken;
         if (token.type == Times) eat(Times);
         else if (token.type == Div) eat(Div);
+        else if (token.type == IntDiv) eat(IntDiv);
         node = new BinOp(node, token, parseFactor());
       }
       

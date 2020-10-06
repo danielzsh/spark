@@ -18,7 +18,7 @@ public:
 			throw error;
 		}
 	}
-	double visit_Int(AstNode* node) {
+	double visit_Real(AstNode* node) {
 		if (node->print() == "Num") return visit_Num(*static_cast<Num*>(node));
 		else if (node->print() == "UnOp") return visit_UnOp(*static_cast<UnOp*>(node));
 		else if (node->print() == "Var") return visit_Var(*static_cast<Var*>(node));
@@ -32,10 +32,11 @@ public:
 		return num.value;
 	}
 	double visit_BinOp(BinOp binOp) {
-		if (binOp.op.type == Plus) return visit_Int(binOp.left) + visit_Int(binOp.right);
-		else if (binOp.op.type == Minus) return visit_Int(binOp.left) - visit_Int(binOp.right);
-		else if (binOp.op.type == Times) return visit_Int(binOp.left) * visit_Int(binOp.right);
-		else if (binOp.op.type == Div) return visit_Int(binOp.left) / visit_Int(binOp.right);
+		if (binOp.op.type == Plus) return visit_Real(binOp.left) + visit_Real(binOp.right);
+		else if (binOp.op.type == Minus) return visit_Real(binOp.left) - visit_Real(binOp.right);
+		else if (binOp.op.type == Times) return visit_Real(binOp.left) * visit_Real(binOp.right);
+		else if (binOp.op.type == Div) return (double)(visit_Real(binOp.left) / (double)visit_Real(binOp.right));
+		else if (binOp.op.type == IntDiv) return (int)(visit_Real(binOp.left) / visit_Real(binOp.right));
 		else {
 			std::string error("Error: BinOp operation not recognized.");
 			throw error;
@@ -43,8 +44,8 @@ public:
 	}
 	double visit_UnOp(UnOp unOp) {
 		TokenType op = unOp.op.type;
-		if (op == Plus) return visit_Int(unOp.expr);
-		else return 0 - visit_Int(unOp.expr);
+		if (op == Plus) return visit_Real(unOp.expr);
+		else return 0 - visit_Real(unOp.expr);
 	}
 	void visit_Block(Block block) {
 		for (AstNode* child : block.children) {
@@ -53,7 +54,7 @@ public:
 	}
 	void visit_Assign(class Assign assign) {
 		string var_name = assign.var.value;
-		GLOBAL_SCOPE[var_name] = visit_Int(assign.right);
+		GLOBAL_SCOPE[var_name] = visit_Real(assign.right);
 	}
 	double visit_Var(Var var) {
 		if (GLOBAL_SCOPE.find(var.value) != GLOBAL_SCOPE.end()) return GLOBAL_SCOPE[var.value];
