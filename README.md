@@ -9,5 +9,7 @@ This is the input file. Once you have finished editing its content, click run. T
 ## Valid syntax   
 So far, this code only supports the following:    
 1. The basic four arithmetic operators    
-2. Blocks (defined with { and }, followed by a semicolon)    
+2. Blocks (defined with { and })
+3. Defining and using variables
+4. Integer and float division (// and / respectively)
 Check out the [default input file](https://github.com/dantheking-crypto/MakeALanguage/blob/master/test.txt) for more details.
