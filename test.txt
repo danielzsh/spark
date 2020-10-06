@@ -1,6 +1,7 @@
 main() {
   vars:
-    int: a, b, c;
+    int: a, c;
+    real: b;
   program:
   a = 1*1+4/-2;
   b = -13+4.5;
