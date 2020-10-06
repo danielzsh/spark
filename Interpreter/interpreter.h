@@ -58,10 +58,6 @@ public:
 	}
 	double visit_Var(Var var) {
 		if (GLOBAL_SCOPE.find(var.value) != GLOBAL_SCOPE.end()) return GLOBAL_SCOPE[var.value];
-		else {
-			std::string error = "Error: variable not found";
-			throw error;
-		}
 	}
 	void visit_NoOp() {}
 	void interpret() {

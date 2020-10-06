@@ -1,4 +1,4 @@
-main() {
+ main() {
   vars:
     int: a, c;
     real: b;

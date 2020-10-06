@@ -3,6 +3,7 @@
 #include "Parser/parser.h"
 #include "Lexer/Lexer.h"
 #include "Interpreter/interpreter.h"
+#include "Interpreter/Symbols.h"
 
 // Tip: Don't use using namespace, see https://bit.ly/aaron_help_CPP_GUIDELINE_1
 using namespace std;
@@ -22,19 +23,28 @@ int interpret(string input) {
         block = parser.parseProgram();
     }
     catch (string error) {
-        cout << error;
+        cout << error << "\n";
         return 1;
     }
     cout << "Parser blocks:" << endl;
     for (int i = 0; i < block.size(); i++) {
         cout << block[i]->print() << endl;
     }
+    cout << "SymbolTable: " << endl;
+    SymbolTableBuilder symtabBuilder;
+    try {
+        symtabBuilder.visit(&block);
+    }
+    catch (std::string error) {
+        cout << error << "\n";
+        return 1;
+    }
     Interpreter interpreter(input);
     try {
         interpreter.interpret();
     }
     catch (std::string error) {
-        cout << error;
+        cout << error << "\n";
         return 1;
     }
 
@@ -42,6 +52,9 @@ int interpret(string input) {
     for (auto const& pair : interpreter.GLOBAL_SCOPE) {
         cout << pair.first << " " << pair.second << endl;
     }
+
+    
+    
     return 0;
 }
 int main () {
