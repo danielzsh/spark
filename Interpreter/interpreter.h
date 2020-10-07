@@ -189,9 +189,11 @@ public:
 	void interpret() {
 		Block block = parser.parseProgram();
 		SymbolTableBuilder symtabBuilder;
+		std::cout << "Building symtab...\n";
 		symtabBuilder.visit(&block);
 		std::cout << "Finished building symtab...\n";
 		symTab = symtabBuilder.symtab;
+		std::cout << "Interpreting...\n";
 		visit_Block(block);
 	}
 };

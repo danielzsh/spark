@@ -101,6 +101,10 @@ public:
 		std::string type_name = varDecl.type.type;
 		BuiltinTypeSymbol* type_symbol = static_cast<BuiltinTypeSymbol*>(symtab.lookup(type_name));
 		std::string var_name = varDecl.var.value;
+		if (symtab.lookup(var_name)->name != "") {
+			std::string error("Multiple definition of variable " + var_name);
+			throw error;
+		}
 		VarSymbol* var = new VarSymbol(var_name, type_symbol);
 		symtab.define(var);
 	}
