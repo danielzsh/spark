@@ -122,10 +122,12 @@ public:
         return s;
     }
 };
+class ProcedureDecl;
 class Block : public AstNode {
 public:
     std::vector<AstNode*> children;
     std::vector<VarDecl> declarations;
+    std::vector<ProcedureDecl*> procedures;
     Block () {}
     Block(std::vector<VarDecl> d) : declarations(d) {}
     void append(AstNode* node) {
@@ -140,6 +142,17 @@ public:
     std::string print() {
         std::string s = "Block";
         return s;
+    }
+};
+class ProcedureDecl : public AstNode {
+public:
+    Block block;
+    std::string name;
+    ProcedureDecl(std::string n, Block b) : block(b) {
+        name = n;
+    }
+    std::string print() {
+        return "ProcedureDecl";
     }
 };
 

@@ -2,6 +2,9 @@
   vars:
     int: a, c, d;
     real: b;
+  def foo () {
+     program:
+  }
   program:
   a = 1*1+4//-2;
   b = -13+4.5;

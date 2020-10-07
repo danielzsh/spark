@@ -27,6 +27,7 @@ class Parser {
     Block parseBlock() {  
       eat(LeftBracket);
       Block block(parseDeclarations());
+      block.procedures = parseFunctions();
       eat(PROGRAM);
       eat(Colon);
       AstNode* node = parseStatement();
@@ -50,7 +51,22 @@ class Parser {
                 decl.insert(decl.end(), line.begin(), line.end());
             }     
         }
+       
         return decl;
+    }
+    std::vector<ProcedureDecl*> parseFunctions() {
+        std::vector<ProcedureDecl*> declarations;
+        while (currentToken.type == FUNCTION) {
+            eat(FUNCTION);
+            std::string proc_name = currentToken.value;
+            eat(Identifier);
+            eat(LeftParenthesis);
+            eat(RightParenthesis);
+            Block block = parseBlock();
+            ProcedureDecl* proc_decl = new ProcedureDecl(proc_name, block); 
+            declarations.push_back(proc_decl);
+        }
+        return declarations;
     }
     std::vector<VarDecl> parseVarDeclarations() {
         Type type = parseType();
