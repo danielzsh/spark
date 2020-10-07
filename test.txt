@@ -1,12 +1,14 @@
-main() {
+ main() {
   vars:
-    int: a, b, c;
+    int: a, c, d;
+    real: b;
   program:
-  a = 1*1+4/-2;
+  a = 1*1+4//-2;
   b = -13+4.5;
-  c = (a - b)//3;
+  c = (a - d)//3;
+  d = 40;
   {
     program:
-      c = (a - b)//3;
+      c = (a - d)//3;
   }
 }

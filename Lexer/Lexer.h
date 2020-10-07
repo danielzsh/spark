@@ -21,7 +21,8 @@ class Lexer {
         {"int", INT},
         {"real", REAL},
         {"vars", VARS},
-        {"program", PROGRAM}
+        {"program", PROGRAM},
+        {"func", FUNCTION}
     };
   public:
     Lexer(string inputPass) {
