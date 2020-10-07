@@ -39,6 +39,7 @@ enum TokenType {
     REAL,
     VARS,
     PROGRAM,
+    FUNCTION,
     // Miscellaneous
     Colon,
     Comma

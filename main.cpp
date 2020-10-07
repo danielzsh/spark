@@ -40,6 +40,7 @@ int interpret(string input) {
         return 1;
     }
     Interpreter interpreter(input);
+    cout << "Interpreting...\n";
     try {
         interpreter.interpret();
     }
@@ -49,8 +50,17 @@ int interpret(string input) {
     }
 
     cout << "Variables: " << endl;
+    SymbolTable symtab = interpreter.getSymTab();
     for (auto const& pair : interpreter.GLOBAL_SCOPE) {
-        cout << pair.first << " " << pair.second << endl;
+        cout << pair.first << " ";
+        std::string type = symtab.lookup(pair.first)->type->name;
+        if (type == "int") {
+            cout << pair.second.i;
+        }
+        else if (type == "real") {
+            cout << pair.second.d;
+        }
+        cout << endl;
     }
 
     
