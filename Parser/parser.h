@@ -100,6 +100,10 @@ class Parser {
         node = new Block(parseBlock());
         return node;
       }
+      if (currentToken.type == PRINT) {
+          node = new Print(parsePrint());
+          return node;
+      }
       if (currentToken.type == Identifier) {
         node = new class Assign(parseAssignment());
         return node;
@@ -108,6 +112,14 @@ class Parser {
         node = new NoOp();
         return node;
       }
+    }
+    Print parsePrint() {
+        Token token = currentToken;
+        eat(PRINT);
+        eat(LeftParenthesis);
+        Print print(parseExpression(), token);
+        eat(RightParenthesis);
+        return print;
     }
     class Assign parseAssignment() {
       Var var = parseVariable();

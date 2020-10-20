@@ -22,7 +22,8 @@ class Lexer {
         {"real", REAL},
         {"vars", VARS},
         {"program", PROGRAM},
-        {"def", FUNCTION}
+        {"def", FUNCTION},
+        {"print", PRINT}
     };
   public:
     Lexer(string inputPass) {
@@ -58,6 +59,24 @@ class Lexer {
       if (position >= input.length()) {
         Token token(EndOfInput, "", line, column);
         return token;
+      }
+      if (input[position] == '#') {
+          position++;
+          column++;
+          while (input[position] != '#') {
+              position++;
+              column++;
+          }
+          position++;
+          column++;
+      }
+      while (position < input.length() && isWhitespaceOrNewline(input[position])) {
+          if (isNewLine(input[position])) {
+              line++;
+              column = 0;
+          }
+          else column++;
+          position++;
       }
       char character = input[position];
       if (isLetter(character)) return recognizeIdentifier();

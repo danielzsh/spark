@@ -34,19 +34,24 @@ public:
 private:
 
 };
-class SymbolTable {
+class ScopedSymbolTable {
+private:
+	std::string scope_name;
+	int scope_level;
 public:
 	std::map<std::string, Symbol*> symbols;
-	SymbolTable() {
+	ScopedSymbolTable(std::string name, int level) {
 		define(new BuiltinTypeSymbol("int"));
 		define(new BuiltinTypeSymbol("real"));
+		scope_name = name;
+		scope_level = level;
 	}
 	void define(Symbol* symbol) {
-		std::cout << "Define: " << symbol->print() << std::endl;
+		// std::cout << "Define: " << symbol->print() << std::endl;
 		symbols[symbol->name] = symbol;
 	}
 	Symbol* lookup(std::string name) {
-		std::cout << "Lookup: " << name << "\n";
+		// std::cout << "Lookup: " << name << "\n";
 		if (symbols.count(name)) {
 			return symbols[name];
 		}
@@ -54,10 +59,25 @@ public:
 			return new Symbol();
 		}
 	}
+	std::string print() {
+		std::string rep("");
+		rep += "SCOPE (SCOPED SYMBOL TABLE)\n==================\n";
+		rep += "Scope name: " + scope_name + "\n";
+		rep += "Scope level: " + std::to_string(scope_level) + "\n";
+		rep += "Contents:\n...................\n";
+		for (auto pair : symbols) {
+			rep += pair.first + ": " + pair.second->print() + "\n";
+		}
+		rep += "====================\n";
+		return rep;
+	}
 };
 class SymbolTableBuilder {
 public:
-	SymbolTable symtab;
+	ScopedSymbolTable symtab;
+	SymbolTableBuilder(std::string name, int level) : symtab(name, level) {
+
+	}
 	void visit(AstNode * node) {
 		if (node->print() == "Block") visit_Block(*static_cast<Block*>(node));
 		else if (node->print() == "UnOp") visit_UnOp(*static_cast<UnOp*>(node));

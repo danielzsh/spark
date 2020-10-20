@@ -40,6 +40,7 @@ enum TokenType {
     VARS,
     PROGRAM,
     FUNCTION,
+    PRINT,
     // Miscellaneous
     Colon,
     Comma

@@ -46,6 +46,19 @@ class Num : public AstNode {
     return s;
   } 
 };
+class Print : public AstNode {
+public:
+    AstNode* expr;
+    Token p;
+    Print(AstNode* e, Token pPass) {
+        expr = e;
+        p = pPass;
+    }
+    std::string print() {
+        std::string s = "Print";
+        return s;
+    }
+};
 class UnOp : public AstNode {
   public:
     AstNode* expr;
