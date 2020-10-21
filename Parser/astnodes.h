@@ -31,6 +31,17 @@ class BinOp : public AstNode {
     return s;
   } 
 };
+class String : public AstNode {
+public:
+    std::string raw;
+    std::vector<AstNode*> expr;
+    void append(AstNode* node) {
+        expr.push_back(node);
+    }
+    std::string print() {
+        return "String";
+    }
+};
 class Num : public AstNode {
   private:
     Token token;
@@ -48,10 +59,10 @@ class Num : public AstNode {
 };
 class Print : public AstNode {
 public:
-    AstNode* expr;
+    String str;
     Token p;
-    Print(AstNode* e, Token pPass) {
-        expr = e;
+    Print(String s, Token pPass) {
+        str = s;
         p = pPass;
     }
     std::string print() {

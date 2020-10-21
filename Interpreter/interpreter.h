@@ -16,9 +16,9 @@ public:
 		int i;
 		double d;
 	};
-	std::map<std::string,val> GLOBAL_SCOPE;
+	std::map<std::string, val> GLOBAL_SCOPE;
 	Interpreter(std::string input) : parser(input), symTab("global", 1) {
-		
+
 	}
 	~Interpreter() {}
 	std::string getType(AstNode* node) {
@@ -79,14 +79,25 @@ public:
 	}
 	void visit_Print(Print p) {
 		cout << "Print: ";
-		if (getType(p.expr) == "int") {
-			cout << visit<int>(p.expr);
-		}
-		else if (getType(p.expr) == "real") {
-			cout << visit<double>(p.expr);
-		}
-		else cout << "Type not recognized";
+		visit_String(p.str);
 		cout << endl;
+	}
+	void visit_String(String str) {
+		int expr_index = 0;
+		for (int i = 0; i < str.raw.size(); i++) {
+			if (str.raw[i] == '{') {
+				AstNode* node = str.expr[expr_index];
+				expr_index++;
+				if (getType(node) == "int") {
+					std::cout << visit<int>(node);
+				}
+				else if (getType(node) == "real") {
+					std::cout << visit<double>(node);
+				}
+				i++;
+			}
+			else cout << str.raw[i];
+		}
 	}
 	template <class T>
 	T visit_BinOp(BinOp binOp) {

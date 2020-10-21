@@ -29,7 +29,7 @@ enum TokenType {
   /// Brackets
   LeftBracket,
   RightBracket,
-    
+  Apostrophe,  
   /// Special tokens
   EndOfInput,
   Semicolon,

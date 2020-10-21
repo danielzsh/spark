@@ -40,6 +40,27 @@ class Parser {
       eat(RightBracket);
       return block;
     }
+    String parseString() {
+        String str;
+        str.raw = "";
+        eat(Apostrophe);
+        while (currentToken.type != Apostrophe) {
+            str.raw += currentToken.value;
+            if (currentToken.type == LeftBracket) {
+                eat(LeftBracket);
+                str.append(parseExpression());
+                str.raw += lexer.SkipWhiteSpaceAndNewlines();
+                str.raw += currentToken.value;
+                eat(RightBracket);
+            }
+            else {
+                str.raw += lexer.SkipWhiteSpaceAndNewlines();
+                eat(currentToken.type);
+            }
+        }
+        eat(Apostrophe);
+        return str;
+    }
     std::vector<VarDecl> parseDeclarations() {
         std::vector<VarDecl> decl;
         if (currentToken.type == VARS) {
@@ -117,7 +138,7 @@ class Parser {
         Token token = currentToken;
         eat(PRINT);
         eat(LeftParenthesis);
-        Print print(parseExpression(), token);
+        Print print(parseString(), token);
         eat(RightParenthesis);
         return print;
     }

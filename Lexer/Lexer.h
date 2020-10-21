@@ -47,15 +47,22 @@ class Lexer {
       } while (currentToken.type != EndOfInput);
       return tokens;
     }
-    Token nextToken () {
-      while (position < input.length() && isWhitespaceOrNewline(input[position])) {
-        if (isNewLine(input[position])) {
-          line++;
-          column = 0;
+    std::string SkipWhiteSpaceAndNewlines() {
+        std::string whitespace = "";
+        while (position < input.length() && isWhitespaceOrNewline(input[position])) {
+            if (isNewLine(input[position])) {
+                line++;
+                column = 0;
+                whitespace += "\n";
+            }
+            else column++;
+            position++;
+            whitespace += " ";
         }
-        else column++;
-        position++;
-      }
+        return whitespace;
+    }
+    Token nextToken () {
+        SkipWhiteSpaceAndNewlines();
       if (position >= input.length()) {
         Token token(EndOfInput, "", line, column);
         return token;
@@ -70,14 +77,7 @@ class Lexer {
           position++;
           column++;
       }
-      while (position < input.length() && isWhitespaceOrNewline(input[position])) {
-          if (isNewLine(input[position])) {
-              line++;
-              column = 0;
-          }
-          else column++;
-          position++;
-      }
+      SkipWhiteSpaceAndNewlines();
       char character = input[position];
       if (isLetter(character)) return recognizeIdentifier();
       if (isDigit(character)) return recognizeNumber();
@@ -120,6 +120,12 @@ class Lexer {
           position++;
           column++;
           Token token(Comma, ",", line, column);
+          return token;
+      }
+      if (character == '\'') {
+          position++;
+          column++;
+          Token token(Apostrophe, "\'", line, column);
           return token;
       }
         std::string error = "Unrecognized";
