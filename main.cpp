@@ -30,15 +30,6 @@ int interpret(string input) {
     for (int i = 0; i < block.size(); i++) {
         cout << block[i]->print() << endl;
     }
-    cout << "SymbolTable: " << endl;
-    SymbolTableBuilder symtabBuilder;
-    try {
-        symtabBuilder.visit(&block);
-    }
-    catch (std::string error) {
-        cout << error << "\n";
-        return 1;
-    }
     Interpreter interpreter(input);
     cout << "Interpreting...\n";
     try {
@@ -50,7 +41,8 @@ int interpret(string input) {
     }
 
     cout << "Variables: " << endl;
-    SymbolTable symtab = interpreter.getSymTab();
+    ScopedSymbolTable symtab = interpreter.getSymTab();
+    cout << symtab.print();
     for (auto const& pair : interpreter.GLOBAL_SCOPE) {
         cout << pair.first << " ";
         std::string type = symtab.lookup(pair.first)->type->name;
@@ -70,5 +62,5 @@ int interpret(string input) {
 int main () {
   ifstream cin("test.txt");
   std::string input((std::istreambuf_iterator<char>(cin)), (std::istreambuf_iterator<char>()));
-  return interpret(input);
+  cout << "File was interpreted with exit code: " << interpret(input) << "\n";
 }

@@ -27,6 +27,7 @@ class Parser {
     Block parseBlock() {  
       eat(LeftBracket);
       Block block(parseDeclarations());
+      block.procedures = parseFunctions();
       eat(PROGRAM);
       eat(Colon);
       AstNode* node = parseStatement();
@@ -39,6 +40,27 @@ class Parser {
       eat(RightBracket);
       return block;
     }
+    String parseString() {
+        String str;
+        str.raw = "";
+        eat(Apostrophe);
+        while (currentToken.type != Apostrophe) {
+            str.raw += currentToken.value;
+            if (currentToken.type == LeftBracket) {
+                eat(LeftBracket);
+                str.append(parseExpression());
+                str.raw += lexer.SkipWhiteSpaceAndNewlines();
+                str.raw += currentToken.value;
+                eat(RightBracket);
+            }
+            else {
+                str.raw += lexer.SkipWhiteSpaceAndNewlines();
+                eat(currentToken.type);
+            }
+        }
+        eat(Apostrophe);
+        return str;
+    }
     std::vector<VarDecl> parseDeclarations() {
         std::vector<VarDecl> decl;
         if (currentToken.type == VARS) {
@@ -50,7 +72,22 @@ class Parser {
                 decl.insert(decl.end(), line.begin(), line.end());
             }     
         }
+       
         return decl;
+    }
+    std::vector<ProcedureDecl*> parseFunctions() {
+        std::vector<ProcedureDecl*> declarations;
+        while (currentToken.type == FUNCTION) {
+            eat(FUNCTION);
+            std::string proc_name = currentToken.value;
+            eat(Identifier);
+            eat(LeftParenthesis);
+            eat(RightParenthesis);
+            Block block = parseBlock();
+            ProcedureDecl* proc_decl = new ProcedureDecl(proc_name, block); 
+            declarations.push_back(proc_decl);
+        }
+        return declarations;
     }
     std::vector<VarDecl> parseVarDeclarations() {
         Type type = parseType();
@@ -84,6 +121,10 @@ class Parser {
         node = new Block(parseBlock());
         return node;
       }
+      if (currentToken.type == PRINT) {
+          node = new Print(parsePrint());
+          return node;
+      }
       if (currentToken.type == Identifier) {
         node = new class Assign(parseAssignment());
         return node;
@@ -92,6 +133,14 @@ class Parser {
         node = new NoOp();
         return node;
       }
+    }
+    Print parsePrint() {
+        Token token = currentToken;
+        eat(PRINT);
+        eat(LeftParenthesis);
+        Print print(parseString(), token);
+        eat(RightParenthesis);
+        return print;
     }
     class Assign parseAssignment() {
       Var var = parseVariable();

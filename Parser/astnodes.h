@@ -31,6 +31,17 @@ class BinOp : public AstNode {
     return s;
   } 
 };
+class String : public AstNode {
+public:
+    std::string raw;
+    std::vector<AstNode*> expr;
+    void append(AstNode* node) {
+        expr.push_back(node);
+    }
+    std::string print() {
+        return "String";
+    }
+};
 class Num : public AstNode {
   private:
     Token token;
@@ -45,6 +56,19 @@ class Num : public AstNode {
     std::string s = "Num";
     return s;
   } 
+};
+class Print : public AstNode {
+public:
+    String str;
+    Token p;
+    Print(String s, Token pPass) {
+        str = s;
+        p = pPass;
+    }
+    std::string print() {
+        std::string s = "Print";
+        return s;
+    }
 };
 class UnOp : public AstNode {
   public:
@@ -122,10 +146,12 @@ public:
         return s;
     }
 };
+class ProcedureDecl;
 class Block : public AstNode {
 public:
     std::vector<AstNode*> children;
     std::vector<VarDecl> declarations;
+    std::vector<ProcedureDecl*> procedures;
     Block () {}
     Block(std::vector<VarDecl> d) : declarations(d) {}
     void append(AstNode* node) {
@@ -140,6 +166,17 @@ public:
     std::string print() {
         std::string s = "Block";
         return s;
+    }
+};
+class ProcedureDecl : public AstNode {
+public:
+    Block block;
+    std::string name;
+    ProcedureDecl(std::string n, Block b) : block(b) {
+        name = n;
+    }
+    std::string print() {
+        return "ProcedureDecl";
     }
 };
 

@@ -9,24 +9,45 @@ class Interpreter
 {
 private:
 	Parser parser;
-	SymbolTable symTab;
+	ScopedSymbolTable symTab;
 public:
 	union val
 	{
 		int i;
 		double d;
 	};
-	std::map<std::string,val> GLOBAL_SCOPE;
-	Interpreter(std::string input) : parser(input) {
-		
+	std::map<std::string, val> GLOBAL_SCOPE;
+	Interpreter(std::string input) : parser(input), symTab("global", 1) {
+
 	}
 	~Interpreter() {}
+	std::string getType(AstNode* node) {
+		if (node->print() == "BinOp") {
+			BinOp* binOp = static_cast<BinOp*>(node);
+			if (binOp->op.type == IntDiv) return "int";
+			else return "real";
+		}
+		else if (node->print() == "Var") {
+			Var* var = static_cast<Var*>(node);
+			return symTab.lookup(var->value)->type->name;
+		}
+		else if (node->print() == "Num") {
+			Num* num = static_cast<Num*>(node);
+			if (num->value == ceil(num->value)) return "int";
+			else return "real";
+		}
+		else if (node->print() == "UnOp") {
+			UnOp* unOp = static_cast<UnOp*>(node);
+			return getType(unOp->expr);
+		}
+	}
 	template<class T>
 	T visit(AstNode* node) {
 		if (typeid(T) == typeid(void)) {
 			if (node->print() == "Block") visit_Block(*static_cast<Block*>(node));
 			else if (node->print() == "Assign") visit_Assign(*static_cast<class Assign*>(node));
 			else if (node->print() == "NoOp") visit_NoOp();
+			else if (node->print() == "Print") visit_Print(*static_cast<Print*>(node));
 			else {
 				std::string error = "Error: void operation not recognized";
 				throw error;
@@ -54,6 +75,28 @@ public:
 		else {
 			std::string error("Type not recognized");
 			throw error;
+		}
+	}
+	void visit_Print(Print p) {
+		cout << "Print: ";
+		visit_String(p.str);
+		cout << endl;
+	}
+	void visit_String(String str) {
+		int expr_index = 0;
+		for (int i = 0; i < str.raw.size(); i++) {
+			if (str.raw[i] == '{') {
+				AstNode* node = str.expr[expr_index];
+				expr_index++;
+				if (getType(node) == "int") {
+					std::cout << visit<int>(node);
+				}
+				else if (getType(node) == "real") {
+					std::cout << visit<double>(node);
+				}
+				i++;
+			}
+			else cout << str.raw[i];
 		}
 	}
 	template <class T>
@@ -142,7 +185,6 @@ public:
 	void visit_Assign(class Assign assign) {
 		std::string var_name = assign.var.value;
 		std::string type = symTab.lookup(var_name)->type->name;
-		cout << type << endl;
 		if (type == "int") {
 			GLOBAL_SCOPE[var_name].i = visit<int>(assign.right);
 			return;
@@ -182,16 +224,18 @@ public:
 		}
 		else return (T)0;
 	}
-	SymbolTable getSymTab() {
+	ScopedSymbolTable getSymTab() {
 		return symTab;
 	}
 	void visit_NoOp() {}
 	void interpret() {
 		Block block = parser.parseProgram();
-		SymbolTableBuilder symtabBuilder;
+		SymbolTableBuilder symtabBuilder("global", 1);
+		std::cout << "Building symtab...\n";
 		symtabBuilder.visit(&block);
 		std::cout << "Finished building symtab...\n";
 		symTab = symtabBuilder.symtab;
+		std::cout << "Interpreting...\n";
 		visit_Block(block);
 	}
 };

@@ -29,7 +29,7 @@ enum TokenType {
   /// Brackets
   LeftBracket,
   RightBracket,
-    
+  Apostrophe,  
   /// Special tokens
   EndOfInput,
   Semicolon,
@@ -40,6 +40,7 @@ enum TokenType {
     VARS,
     PROGRAM,
     FUNCTION,
+    PRINT,
     // Miscellaneous
     Colon,
     Comma
