@@ -5,18 +5,15 @@
 #include <cmath>
 #include "Symbols.h"
 #include <typeinfo>
+#include <variant>
+#include <cassert>
 class Interpreter
 {
 private:
 	Parser parser;
 	ScopedSymbolTable symTab;
 public:
-	union val
-	{
-		int i;
-		double d;
-	};
-	std::map<std::string, val> GLOBAL_SCOPE;
+	std::map<std::string, std::variant<int, double, std::string>> GLOBAL_SCOPE;
 	Interpreter(std::string input) : parser(input), symTab("global", 1) {
 
 	}
@@ -79,25 +76,27 @@ public:
 	}
 	void visit_Print(Print p) {
 		cout << "Print: ";
-		visit_String(p.str);
+		cout << visit_String(p.str);
 		cout << endl;
 	}
-	void visit_String(String str) {
+	std::string visit_String(String str) {
 		int expr_index = 0;
+		std::string result = "";
 		for (int i = 0; i < str.raw.size(); i++) {
 			if (str.raw[i] == '{') {
 				AstNode* node = str.expr[expr_index];
 				expr_index++;
 				if (getType(node) == "int") {
-					std::cout << visit<int>(node);
+					result += std::to_string(visit<int>(node));
 				}
 				else if (getType(node) == "real") {
-					std::cout << visit<double>(node);
+					result += std::to_string(visit<double>(node));
 				}
 				i++;
 			}
-			else cout << str.raw[i];
+			else result += str.raw[i];
 		}
+		return result;
 	}
 	template <class T>
 	T visit_BinOp(BinOp binOp) {
@@ -186,12 +185,15 @@ public:
 		std::string var_name = assign.var.value;
 		std::string type = symTab.lookup(var_name)->type->name;
 		if (type == "int") {
-			GLOBAL_SCOPE[var_name].i = visit<int>(assign.right);
+			GLOBAL_SCOPE[var_name] = visit<int>(assign.right);
 			return;
 		}
 		else if (type == "real") {
-			GLOBAL_SCOPE[var_name].d = visit<double>(assign.right);
+			GLOBAL_SCOPE[var_name] = visit<double>(assign.right);
 			return;
+		}
+		else if (type == "string") {
+			GLOBAL_SCOPE[var_name] = visit_String(*static_cast<String*>(assign.right));
 		}
 		else {
 			std::string error("Var type not supported");
@@ -203,7 +205,7 @@ public:
 		if (GLOBAL_SCOPE.find(var.value) != GLOBAL_SCOPE.end()) {
 			if (typeid(T) == typeid(int)) {
 				std::string type = symTab.lookup(var.value)->type->name;
-				if (type == "int") return (T)GLOBAL_SCOPE[var.value].i;
+				if (type == "int") return (T)std::get<int>(GLOBAL_SCOPE[var.value]);
 				else {
 					std::string error("Wanted integer, got " + type);
 					throw error;
@@ -211,9 +213,17 @@ public:
 			}
 			else if (typeid(T) == typeid(double)) {
 				std::string type = symTab.lookup(var.value)->type->name;
-				if (type == "real") return (T)GLOBAL_SCOPE[var.value].d;
+				if (type == "real") return (T)std::get<double>(GLOBAL_SCOPE[var.value]);
 				else {
 					std::string error("Wanted real, got " + type);
+					throw error;
+				}
+			}
+			else if (typeid(T) == typeid(std::string)) {
+				std::string type = symTab.lookup(var.value)->type->name;
+				if (type == "string") (T)(std::get<std::string>(GLOBAL_SCOPE[var.value]);
+				else {
+					std::string error("Wanted string, got " + type);
 					throw error;
 				}
 			}

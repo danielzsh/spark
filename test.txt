@@ -2,11 +2,13 @@
   vars:
     int: a, c, d;
     real: b;
+    string: test;
   def foo () {
      program:
   }
   program: #this is a comment#
   a = 1*1+4//-2;
+  test = 'Test {a}';
   print('The value of a: {a}');
   b = -13+4.5;
   c = (a - d)//3;

@@ -47,10 +47,13 @@ int interpret(string input) {
         cout << pair.first << " ";
         std::string type = symtab.lookup(pair.first)->type->name;
         if (type == "int") {
-            cout << pair.second.i;
+            cout << std::get<int>(pair.second);
         }
         else if (type == "real") {
-            cout << pair.second.d;
+            cout << std::get<double>(pair.second);
+        }
+        else if (type == "string") {
+            cout << std::get<std::string>(pair.second);
         }
         cout << endl;
     }

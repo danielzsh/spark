@@ -43,6 +43,7 @@ public:
 	ScopedSymbolTable(std::string name, int level) {
 		define(new BuiltinTypeSymbol("int"));
 		define(new BuiltinTypeSymbol("real"));
+		define(new BuiltinTypeSymbol("string"));
 		scope_name = name;
 		scope_level = level;
 	}
