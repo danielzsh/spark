@@ -229,8 +229,7 @@ public:
 		}
 		else return (T)0;
 	}
-	template<>
-	std::string visit_Var<std::string>(Var var) {
+	std::string visit_Var (Var var) {
 		std::string type = symTab.lookup(var.value)->type->name;
 		if (type == "string") return std::get<std::string>(GLOBAL_SCOPE[var.value]);
 		else {
