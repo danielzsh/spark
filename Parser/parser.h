@@ -49,9 +49,10 @@ class Parser {
             if (currentToken.type == LeftBracket) {
                 eat(LeftBracket);
                 str.append(parseExpression());
-                str.raw += lexer.SkipWhiteSpaceAndNewlines();
                 str.raw += currentToken.value;
+                std::string whitespace = lexer.SkipWhiteSpaceAndNewlines();
                 eat(RightBracket);
+                str.raw += whitespace;
             }
             else {
                 str.raw += lexer.SkipWhiteSpaceAndNewlines();

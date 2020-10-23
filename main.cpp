@@ -57,13 +57,11 @@ int interpret(string input) {
         }
         cout << endl;
     }
-
-    
-    
     return 0;
 }
 int main () {
   ifstream cin("test.txt");
   std::string input((std::istreambuf_iterator<char>(cin)), (std::istreambuf_iterator<char>()));
   cout << "File was interpreted with exit code: " << interpret(input) << "\n";
+  return 0;
 }

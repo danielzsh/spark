@@ -69,6 +69,9 @@ public:
 				throw error;
 			}
 		}
+		else if (typeid(T) == typeid(std::string)) {
+			return visit_Var<T>(*static_cast<Var*>(node));
+		}
 		else {
 			std::string error("Type not recognized");
 			throw error;
@@ -219,20 +222,21 @@ public:
 					throw error;
 				}
 			}
-			else if (typeid(T) == typeid(std::string)) {
-				std::string type = symTab.lookup(var.value)->type->name;
-				if (type == "string") (T)(std::get<std::string>(GLOBAL_SCOPE[var.value]);
-				else {
-					std::string error("Wanted string, got " + type);
-					throw error;
-				}
-			}
 			else {
 				std::string error("Var type invalid");
 				throw error;
 			}
 		}
 		else return (T)0;
+	}
+	template<>
+	std::string visit_Var<std::string>(Var var) {
+		std::string type = symTab.lookup(var.value)->type->name;
+		if (type == "string") return std::get<std::string>(GLOBAL_SCOPE[var.value]);
+		else {
+			std::string error("Wanted string, got " + type);
+			throw error;
+		}
 	}
 	ScopedSymbolTable getSymTab() {
 		return symTab;

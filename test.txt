@@ -8,9 +8,9 @@
   }
   program: #this is a comment#
   a = 1*1+4//-2;
-  test = 'Test {a}';
-  print('The value of a: {a}');
   b = -13+4.5;
+  test = 'The value of a is {a}, and the value of b is {b}';
+  print('The value of a is {a}, and the value of b is {b}');
   c = (a - d)//3;
   d = 40;
   {
