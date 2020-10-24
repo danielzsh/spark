@@ -7,6 +7,7 @@
 
 // Tip: Don't use using namespace, see https://bit.ly/aaron_help_CPP_GUIDELINE_1
 using namespace std;
+using namespace interpreter;
 int interpret(string input) {
     Lexer lexer(input);
 
