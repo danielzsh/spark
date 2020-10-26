@@ -25,3 +25,4 @@ jobs:
       run: |
         sudo chmod +x spark.exe
         ./spark.exe test.txt
+      shell: bash
