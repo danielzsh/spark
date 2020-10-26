@@ -23,6 +23,6 @@ jobs:
     - name: mac
       if: matrix.os == 'macos-latest'
       run: |
-        sudo chmod +x spark.exe
+        chmod +x spark.exe
         ./spark.exe test.txt
       shell: bash
