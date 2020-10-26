@@ -1,18 +1,22 @@
  main() {
-  vars:
-    int: a, c, d;
-    real: b;
-  def foo () {
-     program:
-  }
-  program: #this is a comment#
-  a = 1*1+4//-2;
-  print('The value of a: {a}');
-  b = -13+4.5;
-  c = (a - d)//3;
-  d = 40;
-  {
-    program:
-      c = (a - d)//3;
-  }
-}
+ 	vars:
+		int: a, c, d;
+		real: b;
+		string: test, multi;
+	def foo () {
+		program:
+	}
+	program: #this is a comment#
+		a = 1*1+4//-2;
+		b = -13+4.5;
+		test = 'The value of a is {a}, and the value of b is {b}';
+		multi = 'a*b={a*b}';
+		print('{test}');
+		print('{multi}');
+ 		c = (a - d)//3;
+ 		d = 40;
+		{
+			program:
+				c = (a - d)//3;
+		}
+	}

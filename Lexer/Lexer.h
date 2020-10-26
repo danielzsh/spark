@@ -23,7 +23,8 @@ class Lexer {
         {"vars", VARS},
         {"program", PROGRAM},
         {"def", FUNCTION},
-        {"print", PRINT}
+        {"print", PRINT},
+        {"string", STRING}
     };
   public:
     Lexer(string inputPass) {

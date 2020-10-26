@@ -37,6 +37,7 @@ enum TokenType {
     MAIN,
     INT,
     REAL,
+    STRING,
     VARS,
     PROGRAM,
     FUNCTION,

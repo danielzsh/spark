@@ -49,9 +49,10 @@ class Parser {
             if (currentToken.type == LeftBracket) {
                 eat(LeftBracket);
                 str.append(parseExpression());
-                str.raw += lexer.SkipWhiteSpaceAndNewlines();
                 str.raw += currentToken.value;
+                std::string whitespace = lexer.SkipWhiteSpaceAndNewlines();
                 eat(RightBracket);
+                str.raw += whitespace;
             }
             else {
                 str.raw += lexer.SkipWhiteSpaceAndNewlines();
@@ -66,7 +67,7 @@ class Parser {
         if (currentToken.type == VARS) {
             eat(VARS);
             eat(Colon);
-            while (currentToken.type == INT || currentToken.type == REAL)
+            while (currentToken.type == INT || currentToken.type == REAL || currentToken.type == STRING)
             {
                 std::vector<VarDecl> line = parseVarDeclarations();
                 decl.insert(decl.end(), line.begin(), line.end());
@@ -111,7 +112,8 @@ class Parser {
     Type parseType() {
         Token token = currentToken;
         if (currentToken.type == INT) eat(INT);
-        else eat(REAL);
+        else if (currentToken.type == REAL) eat(REAL);
+        else eat(STRING);
         Type node = Type(token);
         return node;
     }
@@ -156,7 +158,12 @@ class Parser {
       return node; 
     }
     AstNode* parseExpression() {
-      AstNode* node = parseTerm();
+      AstNode* node;
+      if (currentToken.type == Apostrophe) {
+          node = new String(parseString());
+          return node;
+      }
+      node = parseTerm();
       while (currentToken.type == Plus || currentToken.type == Minus) {
         Token token = currentToken;
         if (token.type == Plus) eat(Plus);

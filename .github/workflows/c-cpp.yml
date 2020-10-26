@@ -9,9 +9,20 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
-
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
     steps:
     - uses: actions/checkout@v2
-    - name: make
-      run: make
+    - name: windows
+      if: matrix.os == 'windows-latest'
+      run: | 
+        spark test.txt
+      shell: cmd
+    - name: mac
+      if: matrix.os == 'macos-latest'
+      run: |
+        chmod +x spark.exe
+        ./spark.exe test.txt
+      shell: bash
