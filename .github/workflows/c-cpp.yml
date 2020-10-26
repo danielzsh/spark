@@ -26,3 +26,10 @@ jobs:
         chmod +x spark.exe
         ./spark.exe test.txt
       shell: bash
+    - name: test
+      if: matrix.os == 'macos-latest'
+      run: |
+        chmod +x spark.exe
+        ./spark test.txt
+        spark test.txt
+      
