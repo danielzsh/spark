@@ -18,12 +18,12 @@ jobs:
     - name: windows
       if: matrix.os == 'windows-latest'
       run: | 
-        spark test.txt
+        spark test.spark
       shell: cmd
     - name: mac
       if: matrix.os == 'macos-latest'
       run: |
         chmod +x spark.exe
-        ./spark test.txt
+        ./spark test.spark
       shell: bash
       
