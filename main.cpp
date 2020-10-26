@@ -8,6 +8,18 @@
 // Tip: Don't use using namespace, see https://bit.ly/aaron_help_CPP_GUIDELINE_1
 using namespace std;
 using namespace interpreter;
+std::string readFileToVector(const std::string& filename)
+{
+    std::ifstream source;
+    source.open(filename);
+    std::string lines;
+    std::string line;
+    while (std::getline(source, line))
+    {
+        lines += line + '\n';
+    }
+    return lines;
+}
 int interpret(string input) {
     Lexer lexer(input);
 
@@ -60,10 +72,9 @@ int interpret(string input) {
     }
     return 0;
 }
-int main () {
-  ifstream cin("test.txt");
-  std::string input((std::istreambuf_iterator<char>(cin)), (std::istreambuf_iterator<char>()));
-  int result = interpret(input);
-  cout << "File was interpreted with exit code: " << result << "\n";
+int main (int argc, char** argv) {
+  std::string input(readFileToVector(argv[1]));
+  Interpreter interpreter(input);
+  interpreter.interpret();
   return 0;
 }

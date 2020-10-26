@@ -83,7 +83,6 @@ namespace interpreter {
 			return visit_Var<std::string>(*static_cast<Var*>(node));
 		}
 		void visit_Print(Print p) {
-			cout << "Print: ";
 			cout << visit_String(p.str);
 			cout << endl;
 		}
@@ -256,11 +255,11 @@ namespace interpreter {
 		void interpret() {
 			Block block = parser.parseProgram();
 			SymbolTableBuilder symtabBuilder("global", 1);
-			std::cout << "Building symtab...\n";
+			//std::cout << "Building symtab...\n";
 			symtabBuilder.visit(&block);
-			std::cout << "Finished building symtab...\n";
+			//std::cout << "Finished building symtab...\n";
 			symTab = symtabBuilder.symtab;
-			std::cout << "Interpreting...\n";
+			//std::cout << "Interpreting...\n";
 			visit_Block(block);
 		}
 	};
