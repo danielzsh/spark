@@ -10,10 +10,18 @@ jobs:
   build:
 
     runs-on: windows-latest
-
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
     steps:
     - uses: actions/checkout@v2
-    - name: make
+    - name: windows
+      if: matrix.os == 'windows-latest'
       run: | 
         spark test.txt
       shell: cmd
+    - name: mac
+      if: matrix.os == 'macos-latest'
+      run: |
+        sudo chmod +x spark.exe
+        ./spark.exe test.txt
