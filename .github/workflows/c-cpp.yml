@@ -23,6 +23,7 @@ jobs:
         spark test.spark
       shell: cmd
     - name: upload artifacts
+      uses: actions/upload-artifact@v2
       if: matrix.os == 'windows-latest'
       with:
         name: spark
