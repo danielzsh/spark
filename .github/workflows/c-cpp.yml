@@ -15,9 +15,11 @@ jobs:
         os: [windows-latest, macos-latest]
     steps:
     - uses: actions/checkout@v2
+    - uses: ilammy/msvc-dev-cmd@v1
     - name: windows
       if: matrix.os == 'windows-latest'
       run: | 
+        cl.exe main.cpp /std:c++latest /Fe:spark.exe
         spark test.spark
       shell: cmd
     - name: mac
