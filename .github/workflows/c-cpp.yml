@@ -22,6 +22,12 @@ jobs:
         cl.exe main.cpp /std:c++latest /Fe:spark.exe
         spark test.spark
       shell: cmd
+    - name: upload artifacts
+      if: matrix.os == 'windows-latest'
+      with:
+        name: spark
+        path: |
+          spark.exe
     - name: mac
       if: matrix.os == 'macos-latest'
       run: |
