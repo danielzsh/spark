@@ -1,4 +1,4 @@
-# Welcome to MakeALanguage!
+# Welcome to Spark!
 This is my attempt to create a language in C++ using Faical Tchirou and Ruslan Spivak's tutorials.<br>
 ## How to run this code:
 Head over to the "Actions" tab at the top of the repo.    
