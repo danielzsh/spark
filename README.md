@@ -7,4 +7,4 @@ Make sure that your branch is set to "master" for the latest release build. In o
 Click on the link at the top.<br>
 In the Artifacts section, click on "spark". You may get a warning, but I assure you, this code has no viruses. Press the arrow on the right and press "Keep". Open the zip file - you should see a .exe file called "spark". Drag this into the folder where you want your spark projects to be.<br>
 ### Running: Windows
-Navigate to your project folder and do Shift+Right-click. Press "Open PowerShell window here." Now run ./spark <your file>. Voila!
+Navigate to your project folder and do Shift+Right-click. Press "Open PowerShell window here." Now run ./spark \<your file\>. Voila!
