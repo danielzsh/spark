@@ -5,32 +5,39 @@ on:
     branches: [ master, develop, feature/* ]
 
 jobs:
-  build:
-
+  compile:
+    name: build-and-compile
     runs-on: windows-latest
-    strategy:
-      matrix:
-        os: [windows-latest, macos-latest]
     steps:
     - uses: actions/checkout@v2
     - uses: ilammy/msvc-dev-cmd@v1
-    - name: windows
-      if: matrix.os == 'windows-latest'
+    - name: compile
       run: | 
         cl.exe main.cpp /std:c++latest /Fe:spark.exe
-        spark test.spark
       shell: cmd
-    - name: upload artifacts
+    - name: upload executable
       uses: actions/upload-artifact@v2
-      if: matrix.os == 'windows-latest'
       with:
         name: spark
         path: |
           spark.exe
-    - name: mac
-      if: matrix.os == 'macos-latest'
-      run: |
-        chmod +x spark.exe
-        ./spark test.spark
-      shell: bash
-      
+  execute:
+    name: run-on-windows-and-mac
+    needs: [compile]
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+    steps:
+      - name: download-compiler
+        uses: actions/download-artifact@v2
+        with:
+          name: spark
+      - name: run-on-windows
+        if: matrix.os == 'windows-latest'
+        run: spark test.spark
+        shell: cmd
+      - name: run-on-mac
+        if: matrix.os == 'macos-latest'
+        run: ./spark test.spark
+        shell: bash
