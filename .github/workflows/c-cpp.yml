@@ -41,6 +41,6 @@ jobs:
       - name: run-on-mac
         if: matrix.os == 'macos-latest'
         run: | 
-          chmod +x spark.exe
+          chmod 755 spark.exe
           ./spark.exe test.spark
         shell: bash
