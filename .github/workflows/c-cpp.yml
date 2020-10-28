@@ -38,12 +38,16 @@ jobs:
       - name: run-on-windows
         if: matrix.os == 'windows-latest'
         run: |
+          cd ..
+          move ./MakeALanguage/spark.exe ./
           dir 
           spark.exe test.spark
         shell: cmd
       - name: run-on-mac
         if: matrix.os == 'macos-latest'
         run: | 
+          cd ..
+          mv ./MakeALanguage/spark.exe ./
           ls
           cat test.spark
           chmod 755 spark.exe
