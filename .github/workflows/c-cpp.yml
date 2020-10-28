@@ -36,11 +36,14 @@ jobs:
           name: spark
       - name: run-on-windows
         if: matrix.os == 'windows-latest'
-        run: spark.exe test.spark
+        run: |
+          dir 
+          spark.exe test.spark
         shell: cmd
       - name: run-on-mac
         if: matrix.os == 'macos-latest'
         run: | 
+          ls
           chmod 755 spark.exe
           ./spark.exe test.spark
         shell: bash
