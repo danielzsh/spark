@@ -1,4 +1,4 @@
-name: Compile and Run Spark Program
+name: C/C++ CI
 
 on:
   pull_request:
