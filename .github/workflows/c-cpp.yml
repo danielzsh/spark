@@ -3,6 +3,8 @@ name: C/C++ CI
 on:
   pull_request:
     branches: [ master, develop, feature/* ]
+  push:
+    branches: [master]
 
 jobs:
   windows:
