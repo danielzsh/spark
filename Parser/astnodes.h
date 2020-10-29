@@ -171,9 +171,11 @@ public:
 class ProcedureDecl : public AstNode {
 public:
     Block block;
+    std::vector<VarDecl> params;
     std::string name;
-    ProcedureDecl(std::string n, Block b) : block(b) {
+    ProcedureDecl(std::string n, Block b, std::vector<VarDecl> p) : block(b) {
         name = n;
+        params = p;
     }
     std::string print() {
         return "ProcedureDecl";
