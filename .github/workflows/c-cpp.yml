@@ -1,38 +1,48 @@
 name: C/C++ CI
 
 on:
-  push:
-    branches: [ master, develop, feature/* ]
   pull_request:
     branches: [ master, develop, feature/* ]
 
 jobs:
-  build:
-
+  windows:
+    name: run on windows
     runs-on: windows-latest
-    strategy:
-      matrix:
-        os: [windows-latest, macos-latest]
     steps:
     - uses: actions/checkout@v2
-    - uses: ilammy/msvc-dev-cmd@v1
-    - name: windows
-      if: matrix.os == 'windows-latest'
+    - uses: ilammy/msvc-dev-cmd@v1.4.1
+    - name: compile
       run: | 
-        cl.exe main.cpp /std:c++latest /Fe:spark.exe
-        spark test.spark
-      shell: cmd
-    - name: upload artifacts
-      uses: actions/upload-artifact@v2
-      if: matrix.os == 'windows-latest'
-      with:
-        name: spark
-        path: |
-          spark.exe
-    - name: mac
-      if: matrix.os == 'macos-latest'
+        cl main.cpp /Fe:spark-windows /std:c++latest
+    - name: run
       run: |
-        chmod +x spark.exe
-        ./spark test.spark
-      shell: bash
-      
+        spark-windows.exe test.spark
+      shell: cmd
+    - name: upload executable
+      uses: actions/upload-artifact@v2
+      with:
+        name: windows
+        path: |
+          spark-windows.exe
+  mac-and-ubuntu:
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    name: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v2
+      - name: compile
+        run: |
+          g++ -std=c++17 main.cpp -o spark-${{matrix.os}}
+      - name: run
+        run: |
+          ./spark-${{matrix.os}} test.spark
+        shell: bash
+      - name: upload executable
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{matrix.os}}
+          path: |
+            spark-${{matrix.os}}
+          
