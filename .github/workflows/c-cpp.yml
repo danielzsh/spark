@@ -7,20 +7,18 @@ on:
 jobs:
   compile:
     name: build-and-compile
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: ilammy/msvc-dev-cmd@v1
     - name: compile
       run: | 
-        cl.exe main.cpp /std:c++latest /Fe:spark.exe
-      shell: cmd
+        g++ -std=c++11 main.cpp -o spark
     - name: upload executable
       uses: actions/upload-artifact@v2
       with:
         name: spark
         path: |
-          spark.exe
+          spark
   execute:
     name: run-on-windows-and-mac
     needs: [compile]
@@ -39,12 +37,10 @@ jobs:
       - name: run-on-windows
         if: matrix.os == 'windows-latest'
         run: |
-          spark.exe test.spark
-        shell: cmd
+          ./spark test.spark
       - name: run-on-mac
         if: matrix.os == 'macos-latest'
         run: | 
-          mv spark.exe spark
           chmod +x spark
           ./spark test.spark
         shell: bash

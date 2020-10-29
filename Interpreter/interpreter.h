@@ -41,7 +41,7 @@ namespace interpreter {
 		}
 		template<class T>
 		T visit(AstNode* node) {
-			if (typeid(T) == typeid(void)) {
+			if constexpr (std::is_same_v<T, void>) {
 				if (node->print() == "Block") visit_Block(*static_cast<Block*>(node));
 				else if (node->print() == "Assign") visit_Assign(*static_cast<class Assign*>(node));
 				else if (node->print() == "NoOp") visit_NoOp();
@@ -51,7 +51,7 @@ namespace interpreter {
 					throw error;
 				}
 			}
-			else if (typeid(T) == typeid(int) || typeid(T) == typeid(double)) {
+			else if constexpr (std::is_same_v<T, int> || std::is_same_v<T, double>) {
 				if (node->print() == "BinOp") {
 					BinOp binOp = *static_cast<BinOp*>(node);
 					return visit_BinOp<T>(binOp);
@@ -70,17 +70,13 @@ namespace interpreter {
 					throw error;
 				}
 			}
-			else if (typeid(T) == typeid(std::string)) {
+			else if constexpr (std::is_same_v<T, std::string>) {
 				return visit_Var<T>(*static_cast<Var*>(node));
 			}
 			else {
 				std::string error("Type not recognized");
 				throw error;
 			}
-		}
-		template <>
-		std::string visit(AstNode* node) {
-			return visit_Var<std::string>(*static_cast<Var*>(node));
 		}
 		void visit_Print(Print p) {
 			cout << visit_String(p.str);
@@ -213,7 +209,7 @@ namespace interpreter {
 		template<class T>
 		T visit_Var(Var var) {
 			if (GLOBAL_SCOPE.find(var.value) != GLOBAL_SCOPE.end()) {
-				if (typeid(T) == typeid(int)) {
+				if constexpr (std::is_same_v<T, int>) {
 					std::string type = symTab.lookup(var.value)->type->name;
 					if (type == "int") return (T)std::get<int>(GLOBAL_SCOPE[var.value]);
 					else {
@@ -221,7 +217,7 @@ namespace interpreter {
 						throw error;
 					}
 				}
-				else if (typeid(T) == typeid(double)) {
+				else if constexpr (std::is_same_v<T, double>) {
 					std::string type = symTab.lookup(var.value)->type->name;
 					if (type == "real") return (T)std::get<double>(GLOBAL_SCOPE[var.value]);
 					else if (type == "int") {
@@ -232,21 +228,20 @@ namespace interpreter {
 						throw error;
 					}
 				}
+				else if constexpr (std::is_same_v<T, std::string>) {
+					std::string type = symTab.lookup(var.value)->type->name;
+					if (type == "string") return std::get<std::string>(GLOBAL_SCOPE[var.value]);
+					else {
+						std::string error("Wanted string, got " + type);
+						throw error;
+					}
+				}
 				else {
 					std::string error("Var type invalid");
 					throw error;
 				}
 			}
 			else return (T)0;
-		}
-		template <>
-		std::string visit_Var(Var var) {
-			std::string type = symTab.lookup(var.value)->type->name;
-			if (type == "string") return std::get<std::string>(GLOBAL_SCOPE[var.value]);
-			else {
-				std::string error("Wanted string, got " + type);
-				throw error;
-			}
 		}
 		ScopedSymbolTable getSymTab() {
 			return symTab;
