@@ -24,22 +24,25 @@ jobs:
         name: windows
         path: |
           spark-windows.exe
-  mac:
-    name: run on mac
-    runs-on: macos-latest
+  mac-and-ubuntu:
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    name: ${{matrix.os}}
     steps:
       - uses: actions/checkout@v2
       - name: compile
         run: |
-          g++ -std=c++17 main.cpp -o spark-mac
+          g++ -std=c++17 main.cpp -o spark-${{matrix.os}}
       - name: run
         run: |
-          ./spark-mac test.spark
+          ./spark-${{matrix.os}} test.spark
         shell: bash
       - name: upload executable
         uses: actions/upload-artifact@v2
         with:
-          name: mac
+          name: ${{matrix.os}}
           path: |
-            spark-mac
+            spark-${{matrix.os}}
           
