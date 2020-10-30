@@ -96,9 +96,10 @@ class Parser {
             std::string proc_name = currentToken.value;
             eat(Identifier);
             eat(LeftParenthesis);
+            std::vector<VarDecl> params = parseFormalParameters();
             eat(RightParenthesis);
             Block block = parseBlock();
-            ProcedureDecl* proc_decl = new ProcedureDecl(proc_name,  block, parseFormalParameters());
+            ProcedureDecl* proc_decl = new ProcedureDecl(proc_name,  block, params);
             declarations.push_back(proc_decl);
         }
         return declarations;
