@@ -1,4 +1,4 @@
-name: Compile and Run Spark Program
+name: Compile Spark
 
 on:
   pull_request:
