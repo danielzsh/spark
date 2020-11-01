@@ -13,6 +13,7 @@ namespace interpreter {
 	private:
 		Parser parser;
 		ScopedSymbolTable symTab;
+		ScopedSymbolTable& currentSymTab = symTab;
 	public:
 		std::map<std::string, std::variant<int, double, std::string>> GLOBAL_SCOPE;
 		Interpreter(std::string input) : parser(input), symTab("global", 1) {
@@ -248,14 +249,14 @@ namespace interpreter {
 		}
 		void visit_NoOp() {}
 		void interpret() {
-			Block block = parser.parseProgram();
+			Program p = parser.parseProgram();
 			SymbolTableBuilder symtabBuilder("global", 1);
 			//std::cout << "Building symtab...\n";
-			symtabBuilder.visit(&block);
+			symtabBuilder.visit(&p.block);
 			//std::cout << "Finished building symtab...\n";
 			symTab = symtabBuilder.symtab;
 			//std::cout << "Interpreting...\n";
-			visit_Block(block);
+			visit_Block(p.block);
 		}
 	};
 }

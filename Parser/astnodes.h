@@ -168,6 +168,15 @@ public:
         return s;
     }
 };
+class Program : public AstNode {
+public:
+    Block block;
+    Program(Block b) : block(b) {}
+    Program() {}
+    std::string print() {
+        return "Program";
+    }
+};
 class ProcedureDecl : public AstNode {
 public:
     Block block;

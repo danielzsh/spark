@@ -34,6 +34,12 @@ public:
 private:
 
 };
+class ProcedureSymbol : public Symbol {
+public:
+	std::vector<VarDecl> params;
+	ProcedureSymbol(std::string name, std::vector<VarDecl> p) : Symbol(name), params(p) {
+	}
+};
 class ScopedSymbolTable {
 private:
 	std::string scope_name;

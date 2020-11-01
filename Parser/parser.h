@@ -17,12 +17,12 @@ class Parser {
       if (currentToken.type == type) currentToken = lexer.nextToken();
       else error(type, currentToken.type);
     }
-    Block parseProgram() {
+    Program parseProgram() {
       eat(MAIN);
       eat(LeftParenthesis);
       eat(RightParenthesis);
-      return parseBlock();
-
+      Program p(parseBlock());
+      return p;
     }
     Block parseBlock() {  
       eat(LeftBracket);
