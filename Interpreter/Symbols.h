@@ -99,17 +99,17 @@ public:
 		else if (node->print() == "Assign") visit_Assign(*static_cast<class Assign*>(node));
 	}
 	void visit_Program(Program program) {
-		cout << "Enter scope: GLOBAL\n";
+		// cout << "Enter scope: GLOBAL\n";
 		ScopedSymbolTable globalScope("global", 1);
 		currentScope = globalScope;
 		visit_Block(program.block);
-		cout << currentScope.print();
-		cout << "Leave scope: GLOBAL\n";
+		// cout << currentScope.print();
+		// cout << "Leave scope: GLOBAL\n";
 	}
 	void visit_ProcedureDecl(ProcedureDecl proc) {
 		ProcedureSymbol* proc_symbol = new ProcedureSymbol(proc.name);
 		currentScope.define(proc_symbol);
-		cout << "Enter scope: " << proc.name << endl;
+		// cout << "Enter scope: " << proc.name << endl;
 		ScopedSymbolTable proc_scope(proc.name, 2);
 		ScopedSymbolTable* enclosing = new ScopedSymbolTable(currentScope);
 		proc_scope.enclosingScope = enclosing;
@@ -123,7 +123,7 @@ public:
 			proc_symbol->params.push_back(var_symbol);
 		}
 		visit_Block(proc.block);
-		cout << currentScope.print();
+		// cout << currentScope.print();
 		currentScope = *proc_scope.enclosingScope;
 	}
 	void visit_Block(Block block) {
