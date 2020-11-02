@@ -66,7 +66,8 @@ public:
 			return symbols[name];
 		}
 		else {
-			return new Symbol();
+			if (enclosingScope != NULL) return enclosingScope->lookup(name);
+			else return new Symbol();
 		}
 	}
 	std::string print() {

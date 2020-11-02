@@ -4,8 +4,11 @@
 		real: b;
 		string: test, multi;
 	def foo (int: bar) {
-		program:
-			bar = 5;
+		def proc (int: asdf) {
+			program: asdf = a;
+		}
+		program:	
+			bar = a;
 	}
 	program: #this is a comment#
 		a = 1*1+4//-2;
