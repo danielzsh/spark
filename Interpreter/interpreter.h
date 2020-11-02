@@ -257,6 +257,7 @@ namespace interpreter {
 			}
 			catch (std::string error) {
 				cout << error << endl;
+				return;
 			}
 			//std::cout << "Finished building symtab...\n";
 			symTab = symtabBuilder.currentScope;
