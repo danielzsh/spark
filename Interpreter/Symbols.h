@@ -45,8 +45,8 @@ public:
 class ScopedSymbolTable {
 private:
 	std::string scope_name;
-	int scope_level;
 public:
+	int scope_level;
 	ScopedSymbolTable* enclosingScope = NULL;
 	std::map<std::string, Symbol*> symbols;
 	ScopedSymbolTable(std::string name, int level) {
@@ -110,7 +110,7 @@ public:
 		ProcedureSymbol* proc_symbol = new ProcedureSymbol(proc.name);
 		currentScope.define(proc_symbol);
 		// cout << "Enter scope: " << proc.name << endl;
-		ScopedSymbolTable proc_scope(proc.name, 2);
+		ScopedSymbolTable proc_scope(proc.name, currentScope.scope_level + 1);
 		ScopedSymbolTable* enclosing = new ScopedSymbolTable(currentScope);
 		proc_scope.enclosingScope = enclosing;
 		currentScope = proc_scope;
