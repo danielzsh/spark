@@ -5,6 +5,7 @@
 		string: test, multi;
 	def foo (int: bar) {
 		program:
+			bar = 5;
 	}
 	program: #this is a comment#
 		a = 1*1+4//-2;

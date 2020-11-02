@@ -36,8 +36,10 @@ private:
 };
 class ProcedureSymbol : public Symbol {
 public:
-	std::vector<VarDecl> params;
-	ProcedureSymbol(std::string name, std::vector<VarDecl> p) : Symbol(name), params(p) {
+	std::vector<VarSymbol> params;
+	ProcedureSymbol(std::string name, std::vector<VarSymbol> p) : Symbol(name), params(p) {
+	}
+	ProcedureSymbol(std::string name) : Symbol(name) {
 	}
 };
 class ScopedSymbolTable {
@@ -45,6 +47,7 @@ private:
 	std::string scope_name;
 	int scope_level;
 public:
+	ScopedSymbolTable* enclosingScope = NULL;
 	std::map<std::string, Symbol*> symbols;
 	ScopedSymbolTable(std::string name, int level) {
 		define(new BuiltinTypeSymbol("int"));
@@ -82,19 +85,52 @@ public:
 class SymbolTableBuilder {
 public:
 	ScopedSymbolTable symtab;
-	SymbolTableBuilder(std::string name, int level) : symtab(name, level) {
-
+	ScopedSymbolTable& currentScope;
+	SymbolTableBuilder(std::string name, int level) : symtab("global", 1), currentScope(symtab) {
 	}
 	void visit(AstNode * node) {
-		if (node->print() == "Block") visit_Block(*static_cast<Block*>(node));
+		if (node->print() == "Program") visit_Program(*static_cast<Program*>(node));
+		else if (node->print() == "ProcedureDecl") visit_ProcedureDecl(*static_cast<ProcedureDecl*>(node));
+		else if (node->print() == "Block") visit_Block(*static_cast<Block*>(node));
 		else if (node->print() == "UnOp") visit_UnOp(*static_cast<UnOp*>(node));
 		else if (node->print() == "Var") visit_Var(*static_cast<Var*>(node));
 		else if (node->print() == "BinOp") return visit_BinOp(*static_cast<BinOp*>(node));
 		else if (node->print() == "Assign") visit_Assign(*static_cast<class Assign*>(node));
 	}
+	void visit_Program(Program program) {
+		cout << "Enter scope: GLOBAL\n";
+		ScopedSymbolTable globalScope("global", 1);
+		currentScope = globalScope;
+		visit_Block(program.block);
+		cout << currentScope.print();
+		cout << "Leave scope: GLOBAL\n";
+	}
+	void visit_ProcedureDecl(ProcedureDecl proc) {
+		ProcedureSymbol* proc_symbol = new ProcedureSymbol(proc.name);
+		currentScope.define(proc_symbol);
+		cout << "Enter scope: " << proc.name << endl;
+		ScopedSymbolTable proc_scope(proc.name, 2);
+		ScopedSymbolTable* enclosing = new ScopedSymbolTable(currentScope);
+		proc_scope.enclosingScope = enclosing;
+		currentScope = proc_scope;
+		for (VarDecl param : proc.params) {
+			BuiltinTypeSymbol* type = static_cast<BuiltinTypeSymbol*>(currentScope.lookup(param.type.type));
+			std::string param_name = param.var.value;
+			Symbol* var = new VarSymbol(param_name, type);
+			currentScope.define(var);
+			VarSymbol var_symbol(param_name, type);
+			proc_symbol->params.push_back(var_symbol);
+		}
+		visit_Block(proc.block);
+		cout << currentScope.print();
+		currentScope = *proc_scope.enclosingScope;
+	}
 	void visit_Block(Block block) {
 		for (VarDecl decl : block.declarations) {
 			visit_VarDecl(decl);
+		}
+		for (ProcedureDecl* decl : block.procedures) {
+			visit(decl);
 		}
 		for (AstNode* node : block.children) {
 			visit(node);
@@ -109,7 +145,7 @@ public:
 	}
 	void visit_Assign(class Assign assign) {
 		std::string var_name = assign.var.value;
-		Symbol* var_symbol = symtab.lookup(var_name);
+		Symbol* var_symbol = currentScope.lookup(var_name);
 		if (var_symbol->name == "") {
 			std::string error = "Error: variable not defined: " + var_name;
 			throw error;
@@ -118,7 +154,7 @@ public:
 	}
 	void visit_Var(Var var) {
 		std::string var_name = var.value;
-		Symbol* var_symbol = symtab.lookup(var_name);
+		Symbol* var_symbol = currentScope.lookup(var_name);
 		if (var_symbol->name == "") {
 			std::string error = "Error: variable not defined: " + var_name;
 			throw error;
@@ -126,13 +162,13 @@ public:
 	}
 	void visit_VarDecl(VarDecl varDecl) {
 		std::string type_name = varDecl.type.type;
-		BuiltinTypeSymbol* type_symbol = static_cast<BuiltinTypeSymbol*>(symtab.lookup(type_name));
+		BuiltinTypeSymbol* type_symbol = static_cast<BuiltinTypeSymbol*>(currentScope.lookup(type_name));
 		std::string var_name = varDecl.var.value;
-		if (symtab.lookup(var_name)->name != "") {
+		if (currentScope.lookup(var_name)->name != "") {
 			std::string error("Multiple definition of variable " + var_name);
 			throw error;
 		}
 		VarSymbol* var = new VarSymbol(var_name, type_symbol);
-		symtab.define(var);
+		currentScope.define(var);
 	}
 };

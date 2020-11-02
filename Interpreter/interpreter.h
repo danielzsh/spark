@@ -252,9 +252,14 @@ namespace interpreter {
 			Program p = parser.parseProgram();
 			SymbolTableBuilder symtabBuilder("global", 1);
 			//std::cout << "Building symtab...\n";
-			symtabBuilder.visit(&p.block);
+			try {
+				symtabBuilder.visit(&p);
+			}
+			catch (std::string error) {
+				cout << error << endl;
+			}
 			//std::cout << "Finished building symtab...\n";
-			symTab = symtabBuilder.symtab;
+			symTab = symtabBuilder.currentScope;
 			//std::cout << "Interpreting...\n";
 			visit_Block(p.block);
 		}
