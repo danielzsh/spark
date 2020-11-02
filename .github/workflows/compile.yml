@@ -18,7 +18,7 @@ jobs:
         cl main.cpp /Fe:spark /std:c++latest
     - name: run
       run: |
-        spark-windows.exe test.spark
+        spark.exe test.spark
       shell: cmd
     - name: upload executable
       uses: actions/upload-artifact@v2
