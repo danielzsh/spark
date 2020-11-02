@@ -17,12 +17,12 @@ class Parser {
       if (currentToken.type == type) currentToken = lexer.nextToken();
       else error(type, currentToken.type);
     }
-    Block parseProgram() {
+    Program parseProgram() {
       eat(MAIN);
       eat(LeftParenthesis);
       eat(RightParenthesis);
-      return parseBlock();
-
+      Program p(parseBlock());
+      return p;
     }
     Block parseBlock() {  
       eat(LeftBracket);
@@ -70,10 +70,23 @@ class Parser {
             while (currentToken.type == INT || currentToken.type == REAL || currentToken.type == STRING)
             {
                 std::vector<VarDecl> line = parseVarDeclarations();
+                eat(Semicolon);
                 decl.insert(decl.end(), line.begin(), line.end());
             }     
         }
        
+        return decl;
+    }
+    std::vector<VarDecl> parseFormalParameters() {
+        std::vector<VarDecl> decl;
+        while (currentToken.type == INT || currentToken.type == REAL || currentToken.type == STRING)
+            {
+                std::vector<VarDecl> line = parseVarDeclarations();
+                decl.insert(decl.end(), line.begin(), line.end());
+                if (currentToken.type != Semicolon) break;
+                else eat(Semicolon);
+            }
+
         return decl;
     }
     std::vector<ProcedureDecl*> parseFunctions() {
@@ -83,9 +96,10 @@ class Parser {
             std::string proc_name = currentToken.value;
             eat(Identifier);
             eat(LeftParenthesis);
+            std::vector<VarDecl> params = parseFormalParameters();
             eat(RightParenthesis);
             Block block = parseBlock();
-            ProcedureDecl* proc_decl = new ProcedureDecl(proc_name, block); 
+            ProcedureDecl* proc_decl = new ProcedureDecl(proc_name,  block, params);
             declarations.push_back(proc_decl);
         }
         return declarations;
@@ -101,7 +115,6 @@ class Parser {
             declarations.push_back(Var(currentToken));
             eat(Identifier);
         }
-        eat(Semicolon);
         std::vector<VarDecl> var_decl(declarations.size());
         for (unsigned int i = 0; i < var_decl.size(); i++) {
             VarDecl varDecl(type, declarations[i]);

@@ -26,14 +26,14 @@ int interpret(string input) {
     vector<Token> tokens = lexer.allTokens();
 
     // tokens.size() is a long unsigned int, use to prevent -Wall or -Wextra warnings
-    cout << "Lexer tokens:" << endl;
+   /* cout << "Lexer tokens:" << endl;
     for (long unsigned int i = 0; i < tokens.size(); i++) {
         cout << tokens[i];
     }
     Parser parser(input);
-    Block block;
+    Program program;
     try {
-        block = parser.parseProgram();
+        program = parser.parseProgram();
     }
     catch (string error) {
         cout << error << "\n";
@@ -42,9 +42,9 @@ int interpret(string input) {
     cout << "Parser blocks:" << endl;
     for (int i = 0; i < block.size(); i++) {
         cout << block[i]->print() << endl;
-    }
+    }*/
     Interpreter interpreter(input);
-    cout << "Interpreting...\n";
+    // cout << "Interpreting...\n";
     try {
         interpreter.interpret();
     }
@@ -53,7 +53,7 @@ int interpret(string input) {
         return 1;
     }
 
-    cout << "Variables: " << endl;
+    /*cout << "Variables: " << endl;
     ScopedSymbolTable symtab = interpreter.getSymTab();
     cout << symtab.print();
     for (auto const& pair : interpreter.GLOBAL_SCOPE) {
@@ -69,7 +69,7 @@ int interpret(string input) {
             cout << std::get<std::string>(pair.second);
         }
         cout << endl;
-    }
+    }*/
     return 0;
 }
 int main (int argc, char** argv) {
