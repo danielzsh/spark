@@ -3,3 +3,5 @@ Debug/*
 *.sln
 *.vcxproj.*
 *.vcxproj
+spark.exe
+*.obj

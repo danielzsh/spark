@@ -168,12 +168,23 @@ public:
         return s;
     }
 };
+class Program : public AstNode {
+public:
+    Block block;
+    Program(Block b) : block(b) {}
+    Program() {}
+    std::string print() {
+        return "Program";
+    }
+};
 class ProcedureDecl : public AstNode {
 public:
     Block block;
+    std::vector<VarDecl> params;
     std::string name;
-    ProcedureDecl(std::string n, Block b) : block(b) {
+    ProcedureDecl(std::string n, Block b, std::vector<VarDecl> p) : block(b) {
         name = n;
+        params = p;
     }
     std::string print() {
         return "ProcedureDecl";
