@@ -100,6 +100,10 @@ public:
 		else if (node->print() == "Assign") visit_Assign(*static_cast<class Assign*>(node));
 	}
 	void visit_FunctionCall(FunctionCall functionCall) {
+		if (functionCall.params.size() != static_cast<ProcedureSymbol*>(symtab.lookup(functionCall.proc_name))->params.size()) {
+			std::string error("Function call parameters do not match function parameters.");
+			throw error;
+		}
 		for (AstNode* param : functionCall.params) {
 			visit(param);
 		}
