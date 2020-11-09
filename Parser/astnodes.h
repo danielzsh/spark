@@ -146,12 +146,12 @@ public:
         return s;
     }
 };
-class ProcedureDecl;
+class FunctionDecl;
 class Block : public AstNode {
 public:
     std::vector<AstNode*> children;
     std::vector<VarDecl> declarations;
-    std::vector<ProcedureDecl*> procedures;
+    std::vector<FunctionDecl*> procedures;
     Block () {}
     Block(std::vector<VarDecl> d) : declarations(d) {}
     void append(AstNode* node) {
@@ -177,17 +177,31 @@ public:
         return "Program";
     }
 };
-class ProcedureDecl : public AstNode {
+class FunctionDecl : public AstNode {
 public:
     Block block;
     std::vector<VarDecl> params;
     std::string name;
-    ProcedureDecl(std::string n, Block b, std::vector<VarDecl> p) : block(b) {
+    FunctionDecl(std::string n, Block b, std::vector<VarDecl> p) : block(b) {
         name = n;
         params = p;
     }
     std::string print() {
-        return "ProcedureDecl";
+        return "FunctionDecl";
+    }
+};
+class FunctionCall : public AstNode {
+public:
+    std::string proc_name;
+    std::vector<AstNode*> params;
+    Token token;
+    FunctionCall(std::string proc_name, std::vector<AstNode*> params, Token token) {
+        this->proc_name = proc_name;
+        this->params = params;
+        this->token = token;
+    }
+    std::string print() {
+        return "FunctionCall";
     }
 };
 

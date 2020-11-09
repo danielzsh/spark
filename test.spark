@@ -5,12 +5,14 @@
 		string: test, multi;
 	def foo (int: bar) {
 		def proc (int: asdf) {
-			program: asdf = a;
+			program: a = asdf;
 		}
 		program:	
 			bar = a;
+			proc(5);
 	}
 	program: #this is a comment#
+		foo(a);
 		a = 1*1+4//-2;
 		b = -13+4.5;
 		test = 'The value of a is {a}, and the value of b is {b}';

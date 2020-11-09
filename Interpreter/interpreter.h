@@ -47,6 +47,7 @@ namespace interpreter {
 				else if (node->print() == "Assign") visit_Assign(*static_cast<class Assign*>(node));
 				else if (node->print() == "NoOp") visit_NoOp();
 				else if (node->print() == "Print") visit_Print(*static_cast<Print*>(node));
+				else if (node->print() == "FunctionCall");
 				else {
 					std::string error = "Error: void operation not recognized";
 					throw error;
@@ -249,7 +250,14 @@ namespace interpreter {
 		}
 		void visit_NoOp() {}
 		void interpret() {
-			Program p = parser.parseProgram();
+			Program p;
+			try {
+				p = parser.parseProgram();
+			}
+			catch (std::string error) {
+				cout << error << endl;
+				return;
+			}
 			SymbolTableBuilder symtabBuilder("global", 1);
 			//std::cout << "Building symtab...\n";
 			try {

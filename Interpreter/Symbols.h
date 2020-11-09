@@ -91,12 +91,18 @@ public:
 	}
 	void visit(AstNode * node) {
 		if (node->print() == "Program") visit_Program(*static_cast<Program*>(node));
-		else if (node->print() == "ProcedureDecl") visit_ProcedureDecl(*static_cast<ProcedureDecl*>(node));
+		else if (node->print() == "FunctionDecl") visit_ProcedureDecl(*static_cast<FunctionDecl*>(node));
+		else if (node->print() == "FunctionCall") visit_FunctionCall(*static_cast<FunctionCall*>(node));
 		else if (node->print() == "Block") visit_Block(*static_cast<Block*>(node));
 		else if (node->print() == "UnOp") visit_UnOp(*static_cast<UnOp*>(node));
 		else if (node->print() == "Var") visit_Var(*static_cast<Var*>(node));
 		else if (node->print() == "BinOp") return visit_BinOp(*static_cast<BinOp*>(node));
 		else if (node->print() == "Assign") visit_Assign(*static_cast<class Assign*>(node));
+	}
+	void visit_FunctionCall(FunctionCall functionCall) {
+		for (AstNode* param : functionCall.params) {
+			visit(param);
+		}
 	}
 	void visit_Program(Program program) {
 		// cout << "Enter scope: GLOBAL\n";
@@ -106,7 +112,7 @@ public:
 		// cout << currentScope.print();
 		// cout << "Leave scope: GLOBAL\n";
 	}
-	void visit_ProcedureDecl(ProcedureDecl proc) {
+	void visit_ProcedureDecl(FunctionDecl proc) {
 		ProcedureSymbol* proc_symbol = new ProcedureSymbol(proc.name);
 		currentScope.define(proc_symbol);
 		// cout << "Enter scope: " << proc.name << endl;
@@ -130,7 +136,7 @@ public:
 		for (VarDecl decl : block.declarations) {
 			visit_VarDecl(decl);
 		}
-		for (ProcedureDecl* decl : block.procedures) {
+		for (FunctionDecl* decl : block.procedures) {
 			visit(decl);
 		}
 		for (AstNode* node : block.children) {
