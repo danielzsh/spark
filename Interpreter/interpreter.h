@@ -7,6 +7,7 @@
 #include <typeinfo>
 #include <variant>
 #include <cassert>
+#include "./Stack.h"
 namespace interpreter {
 	class Interpreter
 	{
@@ -15,7 +16,7 @@ namespace interpreter {
 		ScopedSymbolTable symTab;
 		ScopedSymbolTable& currentSymTab = symTab;
 	public:
-		std::map<std::string, std::variant<int, double, std::string>> GLOBAL_SCOPE;
+		CallStack stack;
 		Interpreter(std::string input) : parser(input), symTab("global", 1) {
 
 		}
@@ -192,16 +193,18 @@ namespace interpreter {
 		void visit_Assign(class Assign assign) {
 			std::string var_name = assign.var.value;
 			std::string type = symTab.lookup(var_name)->type->name;
+			ActivationRecord& ar = stack.peek();
 			if (type == "int") {
-				GLOBAL_SCOPE[var_name] = visit<int>(assign.right);
+				ar[var_name] = visit<int>(assign.right);
 				return;
 			}
 			else if (type == "real") {
-				GLOBAL_SCOPE[var_name] = visit<double>(assign.right);
+				ar[var_name] = visit<double>(assign.right);
 				return;
 			}
 			else if (type == "string") {
-				GLOBAL_SCOPE[var_name] = visit_String(*static_cast<String*>(assign.right));
+				ar[var_name] = visit_String(*static_cast<String*>(assign.right));
+				return;
 			}
 			else {
 				std::string error("Var type not supported");
@@ -210,10 +213,11 @@ namespace interpreter {
 		}
 		template<class T>
 		T visit_Var(Var var) {
-			if (GLOBAL_SCOPE.find(var.value) != GLOBAL_SCOPE.end()) {
+			ActivationRecord& ar = stack.peek();
+			if (ar.members.find(var.value) != ar.members.end()) {
 				if constexpr (std::is_same_v<T, int>) {
 					std::string type = symTab.lookup(var.value)->type->name;
-					if (type == "int") return (T)std::get<int>(GLOBAL_SCOPE[var.value]);
+					if (type == "int") return (T)std::get<int>(ar[var.value]);
 					else {
 						std::string error("Wanted integer, got " + type);
 						throw error;
@@ -221,9 +225,9 @@ namespace interpreter {
 				}
 				else if constexpr (std::is_same_v<T, double>) {
 					std::string type = symTab.lookup(var.value)->type->name;
-					if (type == "real") return (T)std::get<double>(GLOBAL_SCOPE[var.value]);
+					if (type == "real") return (T)std::get<double>(ar[var.value]);
 					else if (type == "int") {
-						return (T)std::get<int>(GLOBAL_SCOPE[var.value]);
+						return (T)std::get<int>(ar[var.value]);
 					}
 					else {
 						std::string error("Wanted real, got " + type);
@@ -232,7 +236,7 @@ namespace interpreter {
 				}
 				else if constexpr (std::is_same_v<T, std::string>) {
 					std::string type = symTab.lookup(var.value)->type->name;
-					if (type == "string") return std::get<std::string>(GLOBAL_SCOPE[var.value]);
+					if (type == "string") return std::get<std::string>(ar[var.value]);
 					else {
 						std::string error("Wanted string, got " + type);
 						throw error;
@@ -270,7 +274,11 @@ namespace interpreter {
 			//std::cout << "Finished building symtab...\n";
 			symTab = symtabBuilder.currentScope;
 			//std::cout << "Interpreting...\n";
+			ARType t = ARType::PROGRAM;
+			ActivationRecord ar(t, 1);
+			stack.push(ar);
 			visit_Block(p.block);
+			stack.pop();
 		}
 	};
 }
