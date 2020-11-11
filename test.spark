@@ -3,11 +3,16 @@
 		int: a, c, d;
 		real: b;
 		string: test, multi;
-	def foo () {
-		program:
+	def foo (int: bar) {
+		def sub (int: asdf) {
+			program:
+				print('{asdf}');		}
+		program:	
+			sub(bar);
 	}
 	program: #this is a comment#
 		a = 1*1+4//-2;
+		foo(a);
 		b = -13+4.5;
 		test = 'The value of a is {a}, and the value of b is {b}';
 		multi = 'a*b={a*b}';

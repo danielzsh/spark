@@ -36,6 +36,9 @@ class Lexer {
     int getCol () {
       return column;
     }
+    char getChar() {
+        return input[position];
+    }
     vector<Token> allTokens () {
       vector<Token> tokens;
       Token currentToken;

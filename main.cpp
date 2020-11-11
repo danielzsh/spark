@@ -26,50 +26,50 @@ int interpret(string input) {
     vector<Token> tokens = lexer.allTokens();
 
     // tokens.size() is a long unsigned int, use to prevent -Wall or -Wextra warnings
-    cout << "Lexer tokens:" << endl;
+   /* // cout << "Lexer tokens:" << endl;
     for (long unsigned int i = 0; i < tokens.size(); i++) {
-        cout << tokens[i];
+        // cout << tokens[i];
     }
     Parser parser(input);
-    Block block;
+    Program program;
     try {
-        block = parser.parseProgram();
+        program = parser.parseProgram();
     }
     catch (string error) {
-        cout << error << "\n";
+        // cout << error << "\n";
         return 1;
     }
-    cout << "Parser blocks:" << endl;
+    // cout << "Parser blocks:" << endl;
     for (int i = 0; i < block.size(); i++) {
-        cout << block[i]->print() << endl;
-    }
+        // cout << block[i]->print() << endl;
+    }*/
     Interpreter interpreter(input);
-    cout << "Interpreting...\n";
+    // // cout << "Interpreting...\n";
     try {
         interpreter.interpret();
     }
     catch (std::string error) {
-        cout << error << "\n";
+        // cout << error << "\n";
         return 1;
     }
 
-    cout << "Variables: " << endl;
+    /*// cout << "Variables: " << endl;
     ScopedSymbolTable symtab = interpreter.getSymTab();
-    cout << symtab.print();
+    // cout << symtab.print();
     for (auto const& pair : interpreter.GLOBAL_SCOPE) {
-        cout << pair.first << " ";
+        // cout << pair.first << " ";
         std::string type = symtab.lookup(pair.first)->type->name;
         if (type == "int") {
-            cout << std::get<int>(pair.second);
+            // cout << std::get<int>(pair.second);
         }
         else if (type == "real") {
-            cout << std::get<double>(pair.second);
+            // cout << std::get<double>(pair.second);
         }
         else if (type == "string") {
-            cout << std::get<std::string>(pair.second);
+            // cout << std::get<std::string>(pair.second);
         }
-        cout << endl;
-    }
+        // cout << endl;
+    }*/
     return 0;
 }
 int main (int argc, char** argv) {

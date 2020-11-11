@@ -10,19 +10,19 @@ class Parser {
       currentToken = lexer.nextToken();
     }
     void error (TokenType expected, TokenType received) {
-        std::string error = "Invalid syntax: Expected " + std::to_string(expected) + ", got " + std::to_string(received);
+        std::string error = "Invalid syntax: Expected " + std::to_string(expected) + ", got " + std::to_string(received) + " " + currentToken.value;
         throw error;
     } 
     void eat (TokenType type) {
       if (currentToken.type == type) currentToken = lexer.nextToken();
       else error(type, currentToken.type);
     }
-    Block parseProgram() {
+    Program parseProgram() {
       eat(MAIN);
       eat(LeftParenthesis);
       eat(RightParenthesis);
-      return parseBlock();
-
+      Program p(parseBlock());
+      return p;
     }
     Block parseBlock() {  
       eat(LeftBracket);
@@ -70,25 +70,56 @@ class Parser {
             while (currentToken.type == INT || currentToken.type == REAL || currentToken.type == STRING)
             {
                 std::vector<VarDecl> line = parseVarDeclarations();
+                eat(Semicolon);
                 decl.insert(decl.end(), line.begin(), line.end());
             }     
         }
        
         return decl;
     }
-    std::vector<ProcedureDecl*> parseFunctions() {
-        std::vector<ProcedureDecl*> declarations;
+    std::vector<VarDecl> parseFormalParameters() {
+        std::vector<VarDecl> decl;
+        while (currentToken.type == INT || currentToken.type == REAL || currentToken.type == STRING)
+            {
+                std::vector<VarDecl> line = parseVarDeclarations();
+                decl.insert(decl.end(), line.begin(), line.end());
+                if (currentToken.type != Semicolon) break;
+                else eat(Semicolon);
+            }
+
+        return decl;
+    }
+    std::vector<FunctionDecl*> parseFunctions() {
+        std::vector<FunctionDecl*> declarations;
         while (currentToken.type == FUNCTION) {
             eat(FUNCTION);
             std::string proc_name = currentToken.value;
             eat(Identifier);
             eat(LeftParenthesis);
+            std::vector<VarDecl> params = parseFormalParameters();
             eat(RightParenthesis);
             Block block = parseBlock();
-            ProcedureDecl* proc_decl = new ProcedureDecl(proc_name, block); 
+            FunctionDecl* proc_decl = new FunctionDecl(proc_name,  block, params);
             declarations.push_back(proc_decl);
         }
         return declarations;
+    }
+    FunctionCall parseFunctionCall() {
+        Token token = currentToken;
+        std::string proc_name = token.value;
+        eat(Identifier);
+        eat(LeftParenthesis);
+        vector<AstNode*> params;
+        if (currentToken.type != RightParenthesis) {
+            params.push_back(parseExpression());
+        }
+        while (currentToken.type == Comma) {
+            eat(Comma);
+            params.push_back(parseExpression());
+        }
+        eat(RightParenthesis);
+        FunctionCall procCall(proc_name, params, token);
+        return procCall;
     }
     std::vector<VarDecl> parseVarDeclarations() {
         Type type = parseType();
@@ -101,7 +132,6 @@ class Parser {
             declarations.push_back(Var(currentToken));
             eat(Identifier);
         }
-        eat(Semicolon);
         std::vector<VarDecl> var_decl(declarations.size());
         for (unsigned int i = 0; i < var_decl.size(); i++) {
             VarDecl varDecl(type, declarations[i]);
@@ -128,7 +158,8 @@ class Parser {
           return node;
       }
       if (currentToken.type == Identifier) {
-        node = new class Assign(parseAssignment());
+        if (lexer.getChar() == '(') node = new FunctionCall(parseFunctionCall());
+        else node = new class Assign(parseAssignment());
         return node;
       }
       else {

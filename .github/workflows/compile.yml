@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: Compile Spark
 
 on:
   pull_request:
@@ -15,17 +15,17 @@ jobs:
     - uses: ilammy/msvc-dev-cmd@v1.4.1
     - name: compile
       run: | 
-        cl main.cpp /Fe:spark-windows /std:c++latest
+        cl main.cpp /Fe:spark /std:c++latest
     - name: run
       run: |
-        spark-windows.exe test.spark
+        spark.exe test.spark
       shell: cmd
     - name: upload executable
       uses: actions/upload-artifact@v2
       with:
         name: windows
         path: |
-          spark-windows.exe
+          spark.exe
   mac-and-ubuntu:
     runs-on: ${{matrix.os}}
     strategy:
@@ -36,15 +36,15 @@ jobs:
       - uses: actions/checkout@v2
       - name: compile
         run: |
-          g++ -std=c++17 main.cpp -o spark-${{matrix.os}}
+          g++ -std=c++17 main.cpp -o spark
       - name: run
         run: |
-          ./spark-${{matrix.os}} test.spark
+          ./spark test.spark
         shell: bash
       - name: upload executable
         uses: actions/upload-artifact@v2
         with:
           name: ${{matrix.os}}
           path: |
-            spark-${{matrix.os}}
+            spark
           

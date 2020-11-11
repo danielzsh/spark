@@ -7,14 +7,18 @@
 #include <typeinfo>
 #include <variant>
 #include <cassert>
+#include "./Stack.h"
+#include "./SymbolTable.h"
 namespace interpreter {
 	class Interpreter
 	{
 	private:
 		Parser parser;
 		ScopedSymbolTable symTab;
+		ScopedSymbolTable& currentSymTab = symTab;
+		std::map<std::string, std::string> types;
 	public:
-		std::map<std::string, std::variant<int, double, std::string>> GLOBAL_SCOPE;
+		CallStack stack;
 		Interpreter(std::string input) : parser(input), symTab("global", 1) {
 
 		}
@@ -26,8 +30,11 @@ namespace interpreter {
 				else return "real";
 			}
 			else if (node->print() == "Var") {
-				Var* var = static_cast<Var*>(node);
-				return symTab.lookup(var->value)->type->name;
+				// cout << "Getting type of Var..." << endl;
+				Var* var = dynamic_cast<Var*>(node);
+				// cout << var->value << endl;
+				// cout << types[var->value];
+				return types[var->value];
 			}
 			else if (node->print() == "Num") {
 				Num* num = static_cast<Num*>(node);
@@ -46,12 +53,15 @@ namespace interpreter {
 				else if (node->print() == "Assign") visit_Assign(*static_cast<class Assign*>(node));
 				else if (node->print() == "NoOp") visit_NoOp();
 				else if (node->print() == "Print") visit_Print(*static_cast<Print*>(node));
+				else if (node->print() == "FunctionDecl") visit_FunctionDecl(*static_cast<FunctionDecl*>(node));
+				else if (node->print() == "FunctionCall") visit_FunctionCall(*static_cast<FunctionCall*>(node));
 				else {
 					std::string error = "Error: void operation not recognized";
 					throw error;
 				}
 			}
 			else if constexpr (std::is_same_v<T, int> || std::is_same_v<T, double>) {
+				// cout << "Visiting number: " << node->print() << endl;
 				if (node->print() == "BinOp") {
 					BinOp binOp = *static_cast<BinOp*>(node);
 					return visit_BinOp<T>(binOp);
@@ -78,7 +88,33 @@ namespace interpreter {
 				throw error;
 			}
 		}
+		void visit_FunctionDecl(FunctionDecl functionDecl) {
+
+		}
+		void visit_FunctionCall(FunctionCall functionCall) {
+			std::string proc_name = functionCall.proc_name;
+			// cout << proc_name << endl;
+			ActivationRecord ar(ARType::FUNCTION, 2, proc_name);
+			ProcedureSymbol proc_symbol = functionCall.procSymbol;
+			// // cout << proc_symbol.print() << endl;
+			std::vector<VarSymbol> formal_params = proc_symbol.params;
+			std::vector<AstNode*> actual_params = functionCall.params;
+			for (int i = 0; i < formal_params.size(); i++) {
+				if (formal_params[i].type->name == "int") ar[formal_params[i].name] = visit<int>(actual_params[i]);
+				else if (formal_params[i].type->name == "real") ar[formal_params[i].name] = visit<double>(actual_params[i]);
+				else if (formal_params[i].type->name == "string") ar[formal_params[i].name] = visit<std::string>(actual_params[i]);
+			}
+			stack.push(ar);
+			ar = stack.peek();
+			// cout << std::get<int>(ar["bar"]) << endl;
+			// cout << "AR Done!" << endl;
+			// cout << std::get<int>(ar["bar"]) << endl;
+			visit_Block(proc_symbol.blockAst);
+			// cout << "Block done!" << endl;
+			stack.pop();
+		}
 		void visit_Print(Print p) {
+			// cout << p.str.raw << endl;
 			cout << visit_String(p.str);
 			cout << endl;
 		}
@@ -86,10 +122,14 @@ namespace interpreter {
 			int expr_index = 0;
 			std::string result = "";
 			for (int i = 0; i < str.raw.size(); i++) {
+				// cout << str.raw[i];
 				if (str.raw[i] == '{') {
 					AstNode* node = str.expr[expr_index];
+					// cout << boolalpha << (node == nullptr) << endl << node->print() << endl;
 					expr_index++;
+					// cout << getType(node) << endl;
 					if (getType(node) == "int") {
+						// cout << visit<int>(node) << endl;
 						result += std::to_string(visit<int>(node));
 					}
 					else if (getType(node) == "real") {
@@ -102,6 +142,7 @@ namespace interpreter {
 				}
 				else result += str.raw[i];
 			}
+			// cout << result << endl;
 			return result;
 		}
 		template <class T>
@@ -183,23 +224,30 @@ namespace interpreter {
 			}
 		}
 		void visit_Block(Block block) {
+			ActivationRecord ar = stack.peek();
+			// cout << std::get<int>(ar["bar"]) << endl;
+			// cout << "Visiting block..." << endl;
 			for (AstNode* child : block.children) {
+				// cout << "Visiting child..." << endl;
+				// cout << child->print() << endl;
 				visit<void>(child);
 			}
 		}
 		void visit_Assign(class Assign assign) {
 			std::string var_name = assign.var.value;
-			std::string type = symTab.lookup(var_name)->type->name;
+			std::string type = types[var_name];
+			ActivationRecord& ar = stack.peek();
 			if (type == "int") {
-				GLOBAL_SCOPE[var_name] = visit<int>(assign.right);
+				ar[var_name] = visit<int>(assign.right);
 				return;
 			}
 			else if (type == "real") {
-				GLOBAL_SCOPE[var_name] = visit<double>(assign.right);
+				ar[var_name] = visit<double>(assign.right);
 				return;
 			}
 			else if (type == "string") {
-				GLOBAL_SCOPE[var_name] = visit_String(*static_cast<String*>(assign.right));
+				ar[var_name] = visit_String(*static_cast<String*>(assign.right));
+				return;
 			}
 			else {
 				std::string error("Var type not supported");
@@ -208,20 +256,22 @@ namespace interpreter {
 		}
 		template<class T>
 		T visit_Var(Var var) {
-			if (GLOBAL_SCOPE.find(var.value) != GLOBAL_SCOPE.end()) {
+			ActivationRecord& ar = stack.peek();
+			// if (ar.name == "foo") cout << std::get<int>(ar["bar"]) << endl;
+			if (ar.members.find(var.value) != ar.members.end()) {
 				if constexpr (std::is_same_v<T, int>) {
-					std::string type = symTab.lookup(var.value)->type->name;
-					if (type == "int") return (T)std::get<int>(GLOBAL_SCOPE[var.value]);
+					std::string type = types[var.value];
+					if (type == "int") return (T)std::get<int>(ar[var.value]);
 					else {
 						std::string error("Wanted integer, got " + type);
 						throw error;
 					}
 				}
 				else if constexpr (std::is_same_v<T, double>) {
-					std::string type = symTab.lookup(var.value)->type->name;
-					if (type == "real") return (T)std::get<double>(GLOBAL_SCOPE[var.value]);
+					std::string type = types[var.value];
+					if (type == "real") return (T)std::get<double>(ar[var.value]);
 					else if (type == "int") {
-						return (T)std::get<int>(GLOBAL_SCOPE[var.value]);
+						return (T)std::get<int>(ar[var.value]);
 					}
 					else {
 						std::string error("Wanted real, got " + type);
@@ -229,8 +279,8 @@ namespace interpreter {
 					}
 				}
 				else if constexpr (std::is_same_v<T, std::string>) {
-					std::string type = symTab.lookup(var.value)->type->name;
-					if (type == "string") return std::get<std::string>(GLOBAL_SCOPE[var.value]);
+					std::string type = types[var.value];
+					if (type == "string") return std::get<std::string>(ar[var.value]);
 					else {
 						std::string error("Wanted string, got " + type);
 						throw error;
@@ -248,14 +298,31 @@ namespace interpreter {
 		}
 		void visit_NoOp() {}
 		void interpret() {
-			Block block = parser.parseProgram();
+			Program p;
+			try {
+				p = parser.parseProgram();
+			}
+			catch (std::string error) {
+				cout << error << endl;
+				return;
+			}
 			SymbolTableBuilder symtabBuilder("global", 1);
-			//std::cout << "Building symtab...\n";
-			symtabBuilder.visit(&block);
-			//std::cout << "Finished building symtab...\n";
-			symTab = symtabBuilder.symtab;
-			//std::cout << "Interpreting...\n";
-			visit_Block(block);
+			//std::// cout << "Building symtab...\n";
+			try {
+				symtabBuilder.visit(&p);
+			}
+			catch (std::string error) {
+				cout << error << endl;
+				return;
+			}
+			//std::// cout << "Finished building symtab...\n";
+			types = symtabBuilder.types;
+			//std::// cout << "Interpreting...\n";
+			ARType t = ARType::PROGRAM;
+			ActivationRecord ar(t, 1);
+			stack.push(ar);
+			visit_Block(p.block);
+			stack.pop();
 		}
 	};
 }

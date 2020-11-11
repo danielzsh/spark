@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "../Lexer/tokens.h"
+#include "../Interpreter/Symbols.h"
 class AstNode {
   private:
   std::string type;
@@ -146,12 +147,13 @@ public:
         return s;
     }
 };
-class ProcedureDecl;
+class FunctionDecl;
+
 class Block : public AstNode {
 public:
     std::vector<AstNode*> children;
     std::vector<VarDecl> declarations;
-    std::vector<ProcedureDecl*> procedures;
+    std::vector<FunctionDecl*> procedures;
     Block () {}
     Block(std::vector<VarDecl> d) : declarations(d) {}
     void append(AstNode* node) {
@@ -168,16 +170,52 @@ public:
         return s;
     }
 };
-class ProcedureDecl : public AstNode {
+class ProcedureSymbol : public Symbol {
+public:
+    std::vector<VarSymbol> params;
+    ProcedureSymbol(std::string name, std::vector<VarSymbol> p) : Symbol(name), params(p) {
+    }
+    ProcedureSymbol(std::string name) : Symbol(name) {
+    }
+    ProcedureSymbol() {}
+    Block blockAst;
+};
+class Program : public AstNode {
 public:
     Block block;
+    Program(Block b) : block(b) {}
+    Program() {}
+    std::string print() {
+        return "Program";
+    }
+};
+class FunctionDecl : public AstNode {
+public:
+    Block block;
+    std::vector<VarDecl> params;
     std::string name;
-    ProcedureDecl(std::string n, Block b) : block(b) {
+    FunctionDecl(std::string n, Block b, std::vector<VarDecl> p) : block(b) {
         name = n;
+        params = p;
     }
     std::string print() {
-        return "ProcedureDecl";
+        return "FunctionDecl";
     }
+};
+class FunctionCall : public AstNode {
+public:
+    std::string proc_name;
+    std::vector<AstNode*> params;
+    Token token;
+    FunctionCall(std::string proc_name, std::vector<AstNode*> params, Token token) {
+        this->proc_name = proc_name;
+        this->params = params;
+        this->token = token;
+    }
+    std::string print() {
+        return "FunctionCall";
+    }
+    ProcedureSymbol procSymbol;
 };
 
 
