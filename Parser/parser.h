@@ -10,7 +10,7 @@ class Parser {
       currentToken = lexer.nextToken();
     }
     void error (TokenType expected, TokenType received) {
-        std::string error = "Invalid syntax: Expected " + std::to_string(expected) + ", got " + std::to_string(received);
+        std::string error = "Invalid syntax: Expected " + std::to_string(expected) + ", got " + std::to_string(received) + " " + currentToken.value;
         throw error;
     } 
     void eat (TokenType type) {

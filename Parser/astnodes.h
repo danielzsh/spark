@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "../Lexer/tokens.h"
+#include "../Interpreter/Symbols.h"
 class AstNode {
   private:
   std::string type;
@@ -147,6 +148,7 @@ public:
     }
 };
 class FunctionDecl;
+
 class Block : public AstNode {
 public:
     std::vector<AstNode*> children;
@@ -167,6 +169,16 @@ public:
         std::string s = "Block";
         return s;
     }
+};
+class ProcedureSymbol : public Symbol {
+public:
+    std::vector<VarSymbol> params;
+    ProcedureSymbol(std::string name, std::vector<VarSymbol> p) : Symbol(name), params(p) {
+    }
+    ProcedureSymbol(std::string name) : Symbol(name) {
+    }
+    ProcedureSymbol() {}
+    Block blockAst;
 };
 class Program : public AstNode {
 public:
@@ -203,6 +215,7 @@ public:
     std::string print() {
         return "FunctionCall";
     }
+    ProcedureSymbol procSymbol;
 };
 
 

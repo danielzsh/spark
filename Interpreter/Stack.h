@@ -4,7 +4,8 @@
 #include <map>
 #include <vector>
 enum class ARType {
-	PROGRAM
+	PROGRAM,
+	FUNCTION
 };
 using value = std::variant<int, double, std::string>;
 class ActivationRecord {
