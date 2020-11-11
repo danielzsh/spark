@@ -4,14 +4,15 @@
 		real: b;
 		string: test, multi;
 	def foo (int: bar) {
-		def proc (int: asdf) {
-			program: asdf = a;
-		}
+		def sub (int: asdf) {
+			program:
+				print('{asdf}');		}
 		program:	
-			bar = a;
+			sub(bar);
 	}
 	program: #this is a comment#
 		a = 1*1+4//-2;
+		foo(a);
 		b = -13+4.5;
 		test = 'The value of a is {a}, and the value of b is {b}';
 		multi = 'a*b={a*b}';
