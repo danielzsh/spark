@@ -6,7 +6,8 @@
 	def foo (int: bar) {
 		def sub (int: asdf) {
 			program:
-				print('{asdf}');		}
+				print('{asdf}');		
+		}
 		program:	
 			sub(bar);
 	}
