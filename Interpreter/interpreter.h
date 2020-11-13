@@ -17,6 +17,7 @@ namespace interpreter {
 		ScopedSymbolTable symTab;
 		ScopedSymbolTable& currentSymTab = symTab;
 		std::map<std::string, std::string> types;
+		std::map<std::string, std::map<std::string, std::string>> procTypes;
 	public:
 		CallStack stack;
 		Interpreter(std::string input) : parser(input), symTab("global", 1) {
@@ -34,7 +35,12 @@ namespace interpreter {
 				Var* var = dynamic_cast<Var*>(node);
 				// cout << var->value << endl;
 				// cout << types[var->value];
-				return types[var->value];
+				const ActivationRecord& ar = stack.peek();
+				if (ar.nesting_level > 1) {
+					// cout << procTypes[ar.name][var->value];
+					return procTypes[ar.name][var->value];
+				}
+				else return types[var->value];
 			}
 			else if (node->print() == "Num") {
 				Num* num = static_cast<Num*>(node);
@@ -260,7 +266,7 @@ namespace interpreter {
 			// if (ar.name == "foo") cout << std::get<int>(ar["bar"]) << endl;
 			if (ar.members.find(var.value) != ar.members.end()) {
 				if constexpr (std::is_same_v<T, int>) {
-					std::string type = types[var.value];
+					std::string type = getType(&var);
 					if (type == "int") return (T)std::get<int>(ar[var.value]);
 					else {
 						std::string error("Wanted integer, got " + type);
@@ -317,6 +323,7 @@ namespace interpreter {
 			}
 			//std::// cout << "Finished building symtab...\n";
 			types = symtabBuilder.types;
+			procTypes = symtabBuilder.procTypes;
 			//std::// cout << "Interpreting...\n";
 			ARType t = ARType::PROGRAM;
 			ActivationRecord ar(t, 1);

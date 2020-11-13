@@ -20,15 +20,19 @@ public:
 	}
 	void define(Symbol* symbol) {
 		// std::// cout << "Define: " << symbol->print() << std::endl;
+		if (lookup(symbol->name, true)->name != "") {
+			std::string error("Multiple definition of symbol");
+			throw error;
+		}
 		symbols[symbol->name] = symbol;
 	}
-	Symbol* lookup(std::string name) {
+	Symbol* lookup(std::string name, bool currentScopeOnly = false) {
 		// std::// cout << "Lookup: " << name << "\n";
 		if (symbols.count(name)) {
 			return symbols[name];
 		}
 		else {
-			if (enclosingScope != NULL) return enclosingScope->lookup(name);
+			if (enclosingScope != NULL && !currentScopeOnly) return enclosingScope->lookup(name);
 			else return new Symbol();
 		}
 	}
@@ -50,6 +54,7 @@ public:
 	ScopedSymbolTable symtab;
 	ScopedSymbolTable& currentScope;
 	std::map<std::string, std::string> types;
+	std::map<std::string, std::map<std::string, std::string>> procTypes;
 	SymbolTableBuilder(std::string name, int level) : symtab("global", 1), currentScope(symtab) {
 	}
 	void visit(AstNode* node) {
@@ -96,7 +101,7 @@ public:
 			currentScope.define(var);
 			VarSymbol var_symbol(param_name, type);
 			proc_symbol->params.push_back(var_symbol);
-			types[param_name] = param.type.type;
+			procTypes[proc.name][param_name] = param.type.type;
 		}
 		visit_Block(proc.block);
 		// // cout << currentScope.print();
