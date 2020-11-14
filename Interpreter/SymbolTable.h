@@ -49,11 +49,11 @@ public:
 		return rep;
 	}
 };
-class SymbolTableBuilder {
+class SematicAnalyzer {
 public:
 	ScopedSymbolTable symtab;
 	ScopedSymbolTable& currentScope;
-	SymbolTableBuilder(std::string name, int level) : symtab("global", 1), currentScope(symtab) {
+	SematicAnalyzer(std::string name, int level) : symtab("global", 1), currentScope(symtab) {
 	}
 	void visit(AstNode* node) {
 		if (node->print() == "Program") visit_Program(*static_cast<Program*>(node));

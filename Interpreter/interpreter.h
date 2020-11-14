@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include <cmath>
+#include "../Parser/astnodes.h"
 #include "Symbols.h"
 #include <typeinfo>
 #include <variant>
@@ -307,7 +308,7 @@ namespace interpreter {
 				cout << error << endl;
 				return;
 			}
-			SymbolTableBuilder symtabBuilder("global", 1);
+			SematicAnalyzer symtabBuilder("global", 1);
 			//std::// cout << "Building symtab...\n";
 			try {
 				symtabBuilder.visit(&p);
