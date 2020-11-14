@@ -89,6 +89,7 @@ class Var : public AstNode {
   public:
     Token token;
     std::string value;
+    std::string type = "unchanged";
     Var () {}
     Var (Token t) {
       token = t;

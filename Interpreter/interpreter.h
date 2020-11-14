@@ -16,8 +16,6 @@ namespace interpreter {
 		Parser parser;
 		ScopedSymbolTable symTab;
 		ScopedSymbolTable& currentSymTab = symTab;
-		std::map<std::string, std::string> types;
-		std::map<std::string, std::map<std::string, std::string>> procTypes;
 	public:
 		CallStack stack;
 		Interpreter(std::string input) : parser(input), symTab("global", 1) {
@@ -36,11 +34,8 @@ namespace interpreter {
 				// cout << var->value << endl;
 				// cout << types[var->value];
 				const ActivationRecord& ar = stack.peek();
-				if (ar.nesting_level > 1) {
-					// cout << procTypes[ar.name][var->value];
-					return procTypes[ar.name][var->value];
-				}
-				else return types[var->value];
+				// cout << ar.name << endl << var->value << endl << var->type << endl;
+				return var->type;
 			}
 			else if (node->print() == "Num") {
 				Num* num = static_cast<Num*>(node);
@@ -240,8 +235,8 @@ namespace interpreter {
 			}
 		}
 		void visit_Assign(class Assign assign) {
+			std::string type = getType(&assign.var);
 			std::string var_name = assign.var.value;
-			std::string type = types[var_name];
 			ActivationRecord& ar = stack.peek();
 			if (type == "int") {
 				ar[var_name] = visit<int>(assign.right);
@@ -274,7 +269,7 @@ namespace interpreter {
 					}
 				}
 				else if constexpr (std::is_same_v<T, double>) {
-					std::string type = types[var.value];
+					std::string type = getType(&var);
 					if (type == "real") return (T)std::get<double>(ar[var.value]);
 					else if (type == "int") {
 						return (T)std::get<int>(ar[var.value]);
@@ -285,7 +280,7 @@ namespace interpreter {
 					}
 				}
 				else if constexpr (std::is_same_v<T, std::string>) {
-					std::string type = types[var.value];
+					std::string type = getType(&var);
 					if (type == "string") return std::get<std::string>(ar[var.value]);
 					else {
 						std::string error("Wanted string, got " + type);
@@ -322,8 +317,6 @@ namespace interpreter {
 				return;
 			}
 			//std::// cout << "Finished building symtab...\n";
-			types = symtabBuilder.types;
-			procTypes = symtabBuilder.procTypes;
 			//std::// cout << "Interpreting...\n";
 			ARType t = ARType::PROGRAM;
 			ActivationRecord ar(t, 1);
