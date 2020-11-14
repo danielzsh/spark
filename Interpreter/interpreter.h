@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include <cmath>
+#include "../Parser/astnodes.h"
 #include "Symbols.h"
 #include <typeinfo>
 #include <variant>
@@ -16,7 +17,6 @@ namespace interpreter {
 		Parser parser;
 		ScopedSymbolTable symTab;
 		ScopedSymbolTable& currentSymTab = symTab;
-		std::map<std::string, std::string> types;
 	public:
 		CallStack stack;
 		Interpreter(std::string input) : parser(input), symTab("global", 1) {
@@ -34,7 +34,9 @@ namespace interpreter {
 				Var* var = dynamic_cast<Var*>(node);
 				// cout << var->value << endl;
 				// cout << types[var->value];
-				return types[var->value];
+				const ActivationRecord& ar = stack.peek();
+				// cout << ar.name << endl << var->value << endl << var->type << endl;
+				return var->type;
 			}
 			else if (node->print() == "Num") {
 				Num* num = static_cast<Num*>(node);
@@ -234,8 +236,8 @@ namespace interpreter {
 			}
 		}
 		void visit_Assign(class Assign assign) {
+			std::string type = getType(&assign.var);
 			std::string var_name = assign.var.value;
-			std::string type = types[var_name];
 			ActivationRecord& ar = stack.peek();
 			if (type == "int") {
 				ar[var_name] = visit<int>(assign.right);
@@ -260,7 +262,7 @@ namespace interpreter {
 			// if (ar.name == "foo") cout << std::get<int>(ar["bar"]) << endl;
 			if (ar.members.find(var.value) != ar.members.end()) {
 				if constexpr (std::is_same_v<T, int>) {
-					std::string type = types[var.value];
+					std::string type = getType(&var);
 					if (type == "int") return (T)std::get<int>(ar[var.value]);
 					else {
 						std::string error("Wanted integer, got " + type);
@@ -268,7 +270,7 @@ namespace interpreter {
 					}
 				}
 				else if constexpr (std::is_same_v<T, double>) {
-					std::string type = types[var.value];
+					std::string type = getType(&var);
 					if (type == "real") return (T)std::get<double>(ar[var.value]);
 					else if (type == "int") {
 						return (T)std::get<int>(ar[var.value]);
@@ -279,7 +281,7 @@ namespace interpreter {
 					}
 				}
 				else if constexpr (std::is_same_v<T, std::string>) {
-					std::string type = types[var.value];
+					std::string type = getType(&var);
 					if (type == "string") return std::get<std::string>(ar[var.value]);
 					else {
 						std::string error("Wanted string, got " + type);
@@ -306,7 +308,7 @@ namespace interpreter {
 				cout << error << endl;
 				return;
 			}
-			SymbolTableBuilder symtabBuilder("global", 1);
+			SematicAnalyzer symtabBuilder("global", 1);
 			//std::// cout << "Building symtab...\n";
 			try {
 				symtabBuilder.visit(&p);
@@ -316,7 +318,6 @@ namespace interpreter {
 				return;
 			}
 			//std::// cout << "Finished building symtab...\n";
-			types = symtabBuilder.types;
 			//std::// cout << "Interpreting...\n";
 			ARType t = ARType::PROGRAM;
 			ActivationRecord ar(t, 1);

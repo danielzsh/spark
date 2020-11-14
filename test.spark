@@ -3,12 +3,14 @@
 		int: a, c, d;
 		real: b;
 		string: test, multi;
-	def foo (int: bar) {
-		def sub (int: asdf) {
+	def foo (int: a) {
+		def sub (int: a) {
 			program:
-				print('{asdf}');		}
-		program:	
-			sub(bar);
+				print('{a}');		
+		}
+		program:
+			print('Delegating print to sub-function: ');	
+			sub(a);
 	}
 	program: #this is a comment#
 		a = 1*1+4//-2;
