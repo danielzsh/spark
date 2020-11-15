@@ -5,3 +5,4 @@ Debug/*
 *.vcxproj
 spark.exe
 *.obj
+main.exe
