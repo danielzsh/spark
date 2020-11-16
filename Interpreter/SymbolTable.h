@@ -57,7 +57,7 @@ public:
 	}
 	void visit(AstNode* node) {
 		if (node->print() == "Program") visit_Program(*static_cast<Program*>(node));
-		else if (node->print() == "FunctionDecl") visit_ProcedureDecl(*static_cast<FunctionDecl*>(node));
+		else if (node->print() == "FunctionDecl") visit_FunctionDecl(*static_cast<FunctionDecl*>(node));
 		else if (node->print() == "FunctionCall") visit_FunctionCall(*static_cast<FunctionCall*>(node));
 		else if (node->print() == "Block") visit_Block(*static_cast<Block*>(node));
 		else if (node->print() == "UnOp") visit_UnOp(*static_cast<UnOp*>(node));
@@ -74,15 +74,15 @@ public:
 		for (AstNode* expr : str.expr) visit(expr);
 	}
 	void visit_FunctionCall(FunctionCall& functionCall) {
-		if (functionCall.params.size() != static_cast<ProcedureSymbol*>(symtab.lookup(functionCall.proc_name))->params.size()) {
+		if (functionCall.params.size() != static_cast<FunctionSymbol*>(symtab.lookup(functionCall.func_name))->params.size()) {
 			std::string error("Function call parameters do not match function parameters.");
 			throw error;
 		}
 		for (AstNode* param : functionCall.params) {
 			visit(param);
 		}
-		ProcedureSymbol procSymbol = *static_cast<ProcedureSymbol*>(symtab.lookup(functionCall.proc_name));
-		functionCall.procSymbol = procSymbol;
+		FunctionSymbol funcSymbol = *static_cast<FunctionSymbol*>(symtab.lookup(functionCall.func_name));
+		functionCall.funcSymbol = funcSymbol;
 	}
 	void visit_Program(Program& program) {
 		// // cout << "Enter scope: GLOBAL\n";
@@ -92,32 +92,32 @@ public:
 		// // cout << currentScope.print();
 		// // cout << "Leave scope: GLOBAL\n";
 	}
-	void visit_ProcedureDecl(FunctionDecl& proc) {
-		ProcedureSymbol* proc_symbol = new ProcedureSymbol(proc.name);
-		currentScope.define(proc_symbol);
-		// // cout << "Enter scope: " << proc.name << endl;
-		ScopedSymbolTable proc_scope(proc.name, currentScope.scope_level + 1);
+	void visit_FunctionDecl(FunctionDecl& func) {
+		FunctionSymbol* func_symbol = new FunctionSymbol(func.name);
+		currentScope.define(func_symbol);
+		// // cout << "Enter scope: " << func.name << endl;
+		ScopedSymbolTable func_scope(func.name, currentScope.scope_level + 1);
 		ScopedSymbolTable* enclosing = new ScopedSymbolTable(currentScope);
-		proc_scope.enclosingScope = enclosing;
-		currentScope = proc_scope;
-		for (VarDecl param : proc.params) {
+		func_scope.enclosingScope = enclosing;
+		currentScope = func_scope;
+		for (VarDecl param : func.params) {
 			BuiltinTypeSymbol* type = static_cast<BuiltinTypeSymbol*>(currentScope.lookup(param.type.type));
 			std::string param_name = param.var.value;
 			Symbol* var = new VarSymbol(param_name, type);
 			currentScope.define(var);
 			VarSymbol var_symbol(param_name, type);
-			proc_symbol->params.push_back(var_symbol);
+			func_symbol->params.push_back(var_symbol);
 		}
-		visit_Block(proc.block);
+		visit_Block(func.block);
 		// cout << currentScope.print();
-		currentScope = *proc_scope.enclosingScope;
-		proc_symbol->blockAst = *new Block(proc.block);
+		currentScope = *func_scope.enclosingScope;
+		func_symbol->blockAst = *new Block(func.block);
 	}
 	void visit_Block(Block block) {
 		for (VarDecl decl : block.declarations) {
 			visit_VarDecl(decl);
 		}
-		for (FunctionDecl* decl : block.procedures) {
+		for (FunctionDecl* decl : block.functions) {
 			visit(decl);
 		}
 		for (AstNode* node : block.children) {

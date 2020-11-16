@@ -27,7 +27,7 @@ class Parser {
     Block parseBlock() {  
       eat(LeftBracket);
       Block block(parseDeclarations());
-      block.procedures = parseFunctions();
+      block.functions = parseFunctions();
       eat(PROGRAM);
       eat(Colon);
       AstNode* node = parseStatement();
@@ -93,20 +93,20 @@ class Parser {
         std::vector<FunctionDecl*> declarations;
         while (currentToken.type == FUNCTION) {
             eat(FUNCTION);
-            std::string proc_name = currentToken.value;
+            std::string func_name = currentToken.value;
             eat(Identifier);
             eat(LeftParenthesis);
             std::vector<VarDecl> params = parseFormalParameters();
             eat(RightParenthesis);
             Block block = parseBlock();
-            FunctionDecl* proc_decl = new FunctionDecl(proc_name,  block, params);
-            declarations.push_back(proc_decl);
+            FunctionDecl* func_decl = new FunctionDecl(func_name,  block, params);
+            declarations.push_back(func_decl);
         }
         return declarations;
     }
     FunctionCall parseFunctionCall() {
         Token token = currentToken;
-        std::string proc_name = token.value;
+        std::string func_name = token.value;
         eat(Identifier);
         eat(LeftParenthesis);
         vector<AstNode*> params;
@@ -118,8 +118,8 @@ class Parser {
             params.push_back(parseExpression());
         }
         eat(RightParenthesis);
-        FunctionCall procCall(proc_name, params, token);
-        return procCall;
+        FunctionCall funcCall(func_name, params, token);
+        return funcCall;
     }
     std::vector<VarDecl> parseVarDeclarations() {
         Type type = parseType();

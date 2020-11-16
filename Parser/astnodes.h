@@ -154,7 +154,7 @@ class Block : public AstNode {
 public:
     std::vector<AstNode*> children;
     std::vector<VarDecl> declarations;
-    std::vector<FunctionDecl*> procedures;
+    std::vector<FunctionDecl*> functions;
     Block () {}
     Block(std::vector<VarDecl> d) : declarations(d) {}
     void append(AstNode* node) {
@@ -171,14 +171,14 @@ public:
         return s;
     }
 };
-class ProcedureSymbol : public Symbol {
+class FunctionSymbol : public Symbol {
 public:
     std::vector<VarSymbol> params;
-    ProcedureSymbol(std::string name, std::vector<VarSymbol> p) : Symbol(name), params(p) {
+    FunctionSymbol(std::string name, std::vector<VarSymbol> p) : Symbol(name), params(p) {
     }
-    ProcedureSymbol(std::string name) : Symbol(name) {
+    FunctionSymbol(std::string name) : Symbol(name) {
     }
-    ProcedureSymbol() {}
+    FunctionSymbol() {}
     Block blockAst;
 };
 class Program : public AstNode {
@@ -205,18 +205,18 @@ public:
 };
 class FunctionCall : public AstNode {
 public:
-    std::string proc_name;
+    std::string func_name;
     std::vector<AstNode*> params;
     Token token;
-    FunctionCall(std::string proc_name, std::vector<AstNode*> params, Token token) {
-        this->proc_name = proc_name;
+    FunctionCall(std::string func_name, std::vector<AstNode*> params, Token token) {
+        this->func_name = func_name;
         this->params = params;
         this->token = token;
     }
     std::string print() {
         return "FunctionCall";
     }
-    ProcedureSymbol procSymbol;
+    FunctionSymbol funcSymbol;
 };
 
 

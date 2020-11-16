@@ -94,12 +94,12 @@ namespace interpreter {
 
 		}
 		void visit_FunctionCall(FunctionCall functionCall) {
-			std::string proc_name = functionCall.proc_name;
-			// cout << proc_name << endl;
-			ActivationRecord ar(ARType::FUNCTION, 2, proc_name);
-			ProcedureSymbol proc_symbol = functionCall.procSymbol;
-			// // cout << proc_symbol.print() << endl;
-			std::vector<VarSymbol> formal_params = proc_symbol.params;
+			std::string func_name = functionCall.func_name;
+			// cout << func_name << endl;
+			ActivationRecord ar(ARType::FUNCTION, 2, func_name);
+			FunctionSymbol func_symbol = functionCall.funcSymbol;
+			// // cout << func_symbol.print() << endl;
+			std::vector<VarSymbol> formal_params = func_symbol.params;
 			std::vector<AstNode*> actual_params = functionCall.params;
 			for (int i = 0; i < formal_params.size(); i++) {
 				if (formal_params[i].type->name == "int") ar[formal_params[i].name] = visit<int>(actual_params[i]);
@@ -111,7 +111,7 @@ namespace interpreter {
 			// cout << std::get<int>(ar["bar"]) << endl;
 			// cout << "AR Done!" << endl;
 			// cout << std::get<int>(ar["bar"]) << endl;
-			visit_Block(proc_symbol.blockAst);
+			visit_Block(func_symbol.blockAst);
 			// cout << "Block done!" << endl;
 			stack.pop();
 		}
