@@ -196,6 +196,13 @@ class Lexer {
       }
               break;
       case '-': {
+          char lookahead = (position < input.length()) ? input[position] : '\0';
+          if (lookahead != '\0' && lookahead == '>') {
+              Token token(Arrow, "->", line, column);
+              position++;
+              column++;
+              return token;
+          }
           Token token(Minus, "-", line, column);
           return token;
       }

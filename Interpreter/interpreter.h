@@ -47,6 +47,10 @@ namespace interpreter {
 				UnOp* unOp = static_cast<UnOp*>(node);
 				return getType(unOp->expr);
 			}
+			else if (node->print() == "FunctionCall") {
+				FunctionCall* funcCall = static_cast<FunctionCall*>(node);
+				return funcCall->type;
+			}
 		}
 		template<class T>
 		T visit(AstNode* node) {
@@ -94,6 +98,7 @@ namespace interpreter {
 
 		}
 		void visit_FunctionCall(FunctionCall functionCall) {
+			cout << functionCall.type << endl;
 			std::string func_name = functionCall.func_name;
 			// cout << func_name << endl;
 			ActivationRecord ar(ARType::FUNCTION, 2, func_name);

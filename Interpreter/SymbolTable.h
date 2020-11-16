@@ -83,6 +83,7 @@ public:
 		}
 		FunctionSymbol funcSymbol = *static_cast<FunctionSymbol*>(symtab.lookup(functionCall.func_name));
 		functionCall.funcSymbol = funcSymbol;
+		functionCall.type = funcSymbol.type->name;
 	}
 	void visit_Program(Program& program) {
 		// // cout << "Enter scope: GLOBAL\n";
@@ -94,6 +95,8 @@ public:
 	}
 	void visit_FunctionDecl(FunctionDecl& func) {
 		FunctionSymbol* func_symbol = new FunctionSymbol(func.name);
+		BuiltinTypeSymbol* type = new BuiltinTypeSymbol(func.type.type);
+		func_symbol->type = type;
 		currentScope.define(func_symbol);
 		// // cout << "Enter scope: " << func.name << endl;
 		ScopedSymbolTable func_scope(func.name, currentScope.scope_level + 1);

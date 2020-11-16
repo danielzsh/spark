@@ -3,8 +3,8 @@
 		int: a, c, d;
 		real: b;
 		string: test, multi;
-	def foo (int: a) {
-		def sub (int: a) {
+	def foo (int: a) -> int {
+		def sub (int: a) -> real {
 			program:
 				print('{a}');		
 		}

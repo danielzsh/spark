@@ -44,7 +44,8 @@ enum TokenType {
     PRINT,
     // Miscellaneous
     Colon,
-    Comma
+    Comma,
+    Arrow
 };
 
 class Token {

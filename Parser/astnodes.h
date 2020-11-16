@@ -174,6 +174,7 @@ public:
 class FunctionSymbol : public Symbol {
 public:
     std::vector<VarSymbol> params;
+    BuiltinTypeSymbol* type;
     FunctionSymbol(std::string name, std::vector<VarSymbol> p) : Symbol(name), params(p) {
     }
     FunctionSymbol(std::string name) : Symbol(name) {
@@ -195,6 +196,7 @@ public:
     Block block;
     std::vector<VarDecl> params;
     std::string name;
+    Type type;
     FunctionDecl(std::string n, Block b, std::vector<VarDecl> p) : block(b) {
         name = n;
         params = p;
@@ -208,6 +210,7 @@ public:
     std::string func_name;
     std::vector<AstNode*> params;
     Token token;
+    std::string type;
     FunctionCall(std::string func_name, std::vector<AstNode*> params, Token token) {
         this->func_name = func_name;
         this->params = params;

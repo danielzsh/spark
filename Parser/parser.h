@@ -98,8 +98,18 @@ class Parser {
             eat(LeftParenthesis);
             std::vector<VarDecl> params = parseFormalParameters();
             eat(RightParenthesis);
+            Type type;
+            if (currentToken.type == Arrow) {
+                eat(Arrow);
+                Token t = currentToken;
+                if (t.type == INT) eat(INT);
+                else if (t.type == REAL) eat(REAL);
+                else eat(STRING);
+                type = *new Type(t);
+            }
             Block block = parseBlock();
             FunctionDecl* func_decl = new FunctionDecl(func_name,  block, params);
+            func_decl->type = type;
             declarations.push_back(func_decl);
         }
         return declarations;
@@ -246,6 +256,10 @@ class Parser {
         node = expr;
         eat(RightParenthesis);
         return node;
+      }
+      else if (lexer.getChar() == '(') {
+          node = new FunctionCall(parseFunctionCall());
+          return node;
       }
       else {
         node = new Var(parseVariable());
