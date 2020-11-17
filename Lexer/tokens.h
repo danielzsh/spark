@@ -42,9 +42,11 @@ enum TokenType {
     PROGRAM,
     FUNCTION,
     PRINT,
+    RETURN,
     // Miscellaneous
     Colon,
-    Comma
+    Comma,
+    Arrow
 };
 
 class Token {

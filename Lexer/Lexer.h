@@ -24,7 +24,8 @@ class Lexer {
         {"program", PROGRAM},
         {"def", FUNCTION},
         {"print", PRINT},
-        {"string", STRING}
+        {"string", STRING},
+        {"return", RETURN}
     };
   public:
     Lexer(string inputPass) {
@@ -196,6 +197,13 @@ class Lexer {
       }
               break;
       case '-': {
+          char lookahead = (position < input.length()) ? input[position] : '\0';
+          if (lookahead != '\0' && lookahead == '>') {
+              Token token(Arrow, "->", line, column);
+              position++;
+              column++;
+              return token;
+          }
           Token token(Minus, "-", line, column);
           return token;
       }

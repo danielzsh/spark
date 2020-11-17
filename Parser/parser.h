@@ -27,15 +27,17 @@ class Parser {
     Block parseBlock() {  
       eat(LeftBracket);
       Block block(parseDeclarations());
-      block.procedures = parseFunctions();
-      eat(PROGRAM);
-      eat(Colon);
-      AstNode* node = parseStatement();
-      block.append(node);
-      while (currentToken.type == Semicolon || node->print() == "Block") {
-        if (currentToken.type == Semicolon) eat(Semicolon);
-        node = parseStatement();
-        block.append(node);
+      block.functions = parseFunctions();
+      if (currentToken.type == PROGRAM) {
+          eat(PROGRAM);
+          eat(Colon);
+          AstNode* node = parseStatement();
+          block.append(node);
+          while (currentToken.type == Semicolon || node->print() == "Block") {
+              if (currentToken.type == Semicolon) eat(Semicolon);
+              node = parseStatement();
+              block.append(node);
+          }
       }
       eat(RightBracket);
       return block;
@@ -93,20 +95,40 @@ class Parser {
         std::vector<FunctionDecl*> declarations;
         while (currentToken.type == FUNCTION) {
             eat(FUNCTION);
-            std::string proc_name = currentToken.value;
+            std::string func_name = currentToken.value;
             eat(Identifier);
             eat(LeftParenthesis);
             std::vector<VarDecl> params = parseFormalParameters();
             eat(RightParenthesis);
+            Type type;
+            bool hasRet = false;
+            if (currentToken.type == Arrow) {
+                eat(Arrow);
+                Token t = currentToken;
+                if (t.type == INT) eat(INT);
+                else if (t.type == REAL) eat(REAL);
+                else eat(STRING);
+                type = *new Type(t);
+                hasRet = true;
+            }
             Block block = parseBlock();
-            FunctionDecl* proc_decl = new FunctionDecl(proc_name,  block, params);
-            declarations.push_back(proc_decl);
+            AstNode* ret = NULL;
+            if (hasRet) {
+                eat(Arrow);
+                eat(RETURN);
+                ret = parseExpression();
+            }
+            FunctionDecl* func_decl = new FunctionDecl(func_name,  block, params);
+            func_decl->type = type;
+            func_decl->isVoid = !hasRet;
+            if (hasRet) func_decl->retStatement = ret;
+            declarations.push_back(func_decl);
         }
         return declarations;
     }
     FunctionCall parseFunctionCall() {
         Token token = currentToken;
-        std::string proc_name = token.value;
+        std::string func_name = token.value;
         eat(Identifier);
         eat(LeftParenthesis);
         vector<AstNode*> params;
@@ -118,8 +140,8 @@ class Parser {
             params.push_back(parseExpression());
         }
         eat(RightParenthesis);
-        FunctionCall procCall(proc_name, params, token);
-        return procCall;
+        FunctionCall funcCall(func_name, params, token);
+        return funcCall;
     }
     std::vector<VarDecl> parseVarDeclarations() {
         Type type = parseType();
@@ -246,6 +268,10 @@ class Parser {
         node = expr;
         eat(RightParenthesis);
         return node;
+      }
+      else if (lexer.getChar() == '(') {
+          node = new FunctionCall(parseFunctionCall());
+          return node;
       }
       else {
         node = new Var(parseVariable());
