@@ -99,6 +99,7 @@ class Parser {
             std::vector<VarDecl> params = parseFormalParameters();
             eat(RightParenthesis);
             Type type;
+            bool hasRet = false;
             if (currentToken.type == Arrow) {
                 eat(Arrow);
                 Token t = currentToken;
@@ -106,10 +107,19 @@ class Parser {
                 else if (t.type == REAL) eat(REAL);
                 else eat(STRING);
                 type = *new Type(t);
+                hasRet = true;
             }
             Block block = parseBlock();
+            AstNode* ret = NULL;
+            if (hasRet) {
+                eat(Arrow);
+                eat(RETURN);
+                ret = parseExpression();
+            }
             FunctionDecl* func_decl = new FunctionDecl(func_name,  block, params);
             func_decl->type = type;
+            func_decl->isVoid = !hasRet;
+            if (hasRet) func_decl->retStatement = ret;
             declarations.push_back(func_decl);
         }
         return declarations;

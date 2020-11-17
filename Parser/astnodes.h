@@ -174,13 +174,15 @@ public:
 class FunctionSymbol : public Symbol {
 public:
     std::vector<VarSymbol> params;
-    BuiltinTypeSymbol* type;
+    BuiltinTypeSymbol* type = new BuiltinTypeSymbol("void");
     FunctionSymbol(std::string name, std::vector<VarSymbol> p) : Symbol(name), params(p) {
     }
     FunctionSymbol(std::string name) : Symbol(name) {
     }
     FunctionSymbol() {}
     Block blockAst;
+    AstNode* ret = NULL;
+    bool isVoid = true;
 };
 class Program : public AstNode {
 public:
@@ -197,6 +199,7 @@ public:
     std::vector<VarDecl> params;
     std::string name;
     Type type;
+    AstNode* retStatement;
     FunctionDecl(std::string n, Block b, std::vector<VarDecl> p) : block(b) {
         name = n;
         params = p;
@@ -204,6 +207,7 @@ public:
     std::string print() {
         return "FunctionDecl";
     }
+    bool isVoid = true;
 };
 class FunctionCall : public AstNode {
 public:

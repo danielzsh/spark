@@ -49,6 +49,7 @@ namespace interpreter {
 			}
 			else if (node->print() == "FunctionCall") {
 				FunctionCall* funcCall = static_cast<FunctionCall*>(node);
+				// cout << funcCall->type << endl;
 				return funcCall->type;
 			}
 		}
@@ -81,6 +82,9 @@ namespace interpreter {
 				else if (node->print() == "Var") {
 					return visit_Var<T>(*static_cast<Var*>(node));
 				}
+				else if (node->print() == "FunctionCall") {
+					return visit_FunctionCall<T>(*static_cast<FunctionCall*>(node));
+				}
 				else {
 					std::string error = "Error: not recognized";
 					throw error;
@@ -97,8 +101,9 @@ namespace interpreter {
 		void visit_FunctionDecl(FunctionDecl functionDecl) {
 
 		}
-		void visit_FunctionCall(FunctionCall functionCall) {
-			cout << functionCall.type << endl;
+		template <typename T = void>
+		T visit_FunctionCall(FunctionCall functionCall) {
+			// cout << functionCall.type << endl;
 			std::string func_name = functionCall.func_name;
 			// cout << func_name << endl;
 			ActivationRecord ar(ARType::FUNCTION, 2, func_name);
@@ -118,7 +123,13 @@ namespace interpreter {
 			// cout << std::get<int>(ar["bar"]) << endl;
 			visit_Block(func_symbol.blockAst);
 			// cout << "Block done!" << endl;
-			stack.pop();
+			if constexpr (!is_same_v<T, void>) {
+				T ret = visit<T>(func_symbol.ret);
+				// cout << ret << endl;
+				stack.pop();
+				return ret;
+			}
+			else stack.pop();
 		}
 		void visit_Print(Print p) {
 			// cout << p.str.raw << endl;
@@ -154,36 +165,36 @@ namespace interpreter {
 		}
 		template <class T>
 		T visit_BinOp(BinOp binOp) {
-			if (typeid(T) == typeid(int))
+			if constexpr (is_same_v<T, int>)
 			{
 				if (binOp.op.type == Div) {
 					std::string error = "Error: Float division and int are incompatible types";
 					throw error;
 				}
 				else if (binOp.op.type == Plus) {
-					return (T)(visit<int>(binOp.left) + visit<int>(binOp.right));
+					return (visit<int>(binOp.left) + visit<int>(binOp.right));
 				}
 				else if (binOp.op.type == Minus) {
-					return (T)(visit<int>(binOp.left) - visit<int>(binOp.right));
+					return (visit<int>(binOp.left) - visit<int>(binOp.right));
 				}
-				else if (binOp.op.type == Times) return (T)(visit<int>(binOp.left) * visit<int>(binOp.right));
-				else if (binOp.op.type == IntDiv) return (T)(visit<int>(binOp.left) / visit<int>(binOp.right));
+				else if (binOp.op.type == Times) return (visit<int>(binOp.left) * visit<int>(binOp.right));
+				else if (binOp.op.type == IntDiv) return (visit<int>(binOp.left) / visit<int>(binOp.right));
 				else {
 					std::string error("Error: BinOp operation not recognized.");
 					throw error;
 				}
 			}
-			else if (typeid(T) == typeid(double)) {
+			else if constexpr (is_same_v<T, double>) {
 				if (binOp.op.type == Plus) {
-					return (T)(visit<double>(binOp.left) + visit<double>(binOp.right));
+					return (visit<double>(binOp.left) + visit<double>(binOp.right));
 				}
 				else if (binOp.op.type == Minus) {
-					return (T)(visit<int>(binOp.left) - visit<int>(binOp.right));
+					return (visit<double>(binOp.left) - visit<double>(binOp.right));
 				}
-				else if (binOp.op.type == Times) return (T)(visit<double>(binOp.left) * visit<double>(binOp.right));
-				else if (binOp.op.type == IntDiv) return (T)(visit<int>(binOp.left) / visit<int>(binOp.right));
+				else if (binOp.op.type == Times) return (visit<double>(binOp.left) * visit<double>(binOp.right));
+				else if (binOp.op.type == IntDiv) return (visit<int>(binOp.left) / visit<int>(binOp.right));
 				else if (binOp.op.type == Div) {
-					return (T)(visit<double>(binOp.left) / visit<double>(binOp.right));
+					return (visit<double>(binOp.left) / visit<double>(binOp.right));
 				}
 				else {
 					std::string error("Error: BinOp operation not recognized.");
@@ -217,13 +228,13 @@ namespace interpreter {
 				throw error;
 			}
 			TokenType op = unOp.op.type;
-			if (typeid(T) == typeid(int)) {
-				if (op == Plus) return (T)(visit<int>(unOp.expr));
-				else return (T)(0 - visit<int>(unOp.expr));
+			if constexpr (is_same_v<T, int>) {
+				if (op == Plus) return (visit<int>(unOp.expr));
+				else return (0 - visit<int>(unOp.expr));
 			}
-			if (typeid(T) == typeid(double)) {
-				if (op == Plus) return (T)(visit<double>(unOp.expr));
-				else return (T)(0 - visit<double>(unOp.expr));
+			else if (is_same_v<T, double>) {
+				if (op == Plus) return (visit<double>(unOp.expr));
+				else return (0 - visit<double>(unOp.expr));
 			}
 			else {
 				std::string error("Type not recognized");
@@ -243,17 +254,24 @@ namespace interpreter {
 		void visit_Assign(class Assign assign) {
 			std::string type = getType(&assign.var);
 			std::string var_name = assign.var.value;
-			ActivationRecord& ar = stack.peek();
+			// cout << stack.records.size() << endl;
 			if (type == "int") {
-				ar[var_name] = visit<int>(assign.right);
+				int res = visit<int>(assign.right);
+				ActivationRecord& ar = stack.peek();
+				ar[var_name] = res;
+				// cout << std::get<int>(ar[var_name]);
 				return;
 			}
 			else if (type == "real") {
-				ar[var_name] = visit<double>(assign.right);
+				double res = visit<double>(assign.right);
+				ActivationRecord& ar = stack.peek();
+				ar[var_name] = res;
 				return;
 			}
 			else if (type == "string") {
-				ar[var_name] = visit_String(*static_cast<String*>(assign.right));
+				std::string res = visit_String(*static_cast<String*>(assign.right));
+				ActivationRecord& ar = stack.peek();
+				ar[var_name] = res;
 				return;
 			}
 			else {

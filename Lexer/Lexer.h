@@ -24,7 +24,8 @@ class Lexer {
         {"program", PROGRAM},
         {"def", FUNCTION},
         {"print", PRINT},
-        {"string", STRING}
+        {"string", STRING},
+        {"return", RETURN}
     };
   public:
     Lexer(string inputPass) {

@@ -15,6 +15,7 @@ public:
 		define(new BuiltinTypeSymbol("int"));
 		define(new BuiltinTypeSymbol("real"));
 		define(new BuiltinTypeSymbol("string"));
+		define(new BuiltinTypeSymbol("void"));
 		scope_name = name;
 		scope_level = level;
 	}
@@ -56,6 +57,7 @@ public:
 	SematicAnalyzer(std::string name, int level) : symtab("global", 1), currentScope(symtab) {
 	}
 	void visit(AstNode* node) {
+		if (node == NULL) return;
 		if (node->print() == "Program") visit_Program(*static_cast<Program*>(node));
 		else if (node->print() == "FunctionDecl") visit_FunctionDecl(*static_cast<FunctionDecl*>(node));
 		else if (node->print() == "FunctionCall") visit_FunctionCall(*static_cast<FunctionCall*>(node));
@@ -97,6 +99,8 @@ public:
 		FunctionSymbol* func_symbol = new FunctionSymbol(func.name);
 		BuiltinTypeSymbol* type = new BuiltinTypeSymbol(func.type.type);
 		func_symbol->type = type;
+		func_symbol->ret = func.retStatement;
+		func_symbol->isVoid = func.isVoid;
 		currentScope.define(func_symbol);
 		// // cout << "Enter scope: " << func.name << endl;
 		ScopedSymbolTable func_scope(func.name, currentScope.scope_level + 1);
@@ -113,6 +117,7 @@ public:
 		}
 		visit_Block(func.block);
 		// cout << currentScope.print();
+		if (!func_symbol->isVoid) visit(func_symbol->ret);
 		currentScope = *func_scope.enclosingScope;
 		func_symbol->blockAst = *new Block(func.block);
 	}

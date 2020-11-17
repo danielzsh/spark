@@ -31,9 +31,11 @@ public:
 		records.push_back(ar);
 	}
 	void pop() {
+		// cout << "The stack size is: " << records.size() << endl;
 		records.pop_back();
 	}
 	ActivationRecord& peek() {
+		// if (records.size() == 0) cout << "THERE ARE NO MORE RECORDS\n";
 		return records.back();
 	}
 };
