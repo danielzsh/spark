@@ -15,9 +15,7 @@ main() {
 	} -> return 1
 	def retStatments(real: a) -> real {
 		def subtract(real: a) -> real {
-			program:
 		} -> return a - 1
-		program:
 	} -> return subtract(a)
 	program: #this is a comment#
 		a = 1*1+4//-2;

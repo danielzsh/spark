@@ -28,14 +28,16 @@ class Parser {
       eat(LeftBracket);
       Block block(parseDeclarations());
       block.functions = parseFunctions();
-      eat(PROGRAM);
-      eat(Colon);
-      AstNode* node = parseStatement();
-      block.append(node);
-      while (currentToken.type == Semicolon || node->print() == "Block") {
-        if (currentToken.type == Semicolon) eat(Semicolon);
-        node = parseStatement();
-        block.append(node);
+      if (currentToken.type == PROGRAM) {
+          eat(PROGRAM);
+          eat(Colon);
+          AstNode* node = parseStatement();
+          block.append(node);
+          while (currentToken.type == Semicolon || node->print() == "Block") {
+              if (currentToken.type == Semicolon) eat(Semicolon);
+              node = parseStatement();
+              block.append(node);
+          }
       }
       eat(RightBracket);
       return block;
