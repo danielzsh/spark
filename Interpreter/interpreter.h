@@ -124,6 +124,11 @@ namespace interpreter {
 			visit_Block(func_symbol.blockAst);
 			// cout << "Block done!" << endl;
 			if constexpr (!is_same_v<T, void>) {
+				if (is_same_v<T, int>)
+					if (functionCall.type != "int") {
+						std::string error("You wanted int, but the function returns " + functionCall.type);
+						throw error;
+					}
 				T ret = visit<T>(func_symbol.ret);
 				// cout << ret << endl;
 				stack.pop();
@@ -345,7 +350,14 @@ namespace interpreter {
 			ARType t = ARType::PROGRAM;
 			ActivationRecord ar(t, 1);
 			stack.push(ar);
-			visit_Block(p.block);
+			try {
+				visit_Block(p.block);
+			}
+			catch (std::string error) {
+				cout << error << "\n";
+				return;
+			}
+			
 			stack.pop();
 		}
 	};
