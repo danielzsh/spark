@@ -49,7 +49,7 @@ int interpret(string input) {
         interpreter.interpret();
     }
     catch (std::string error) {
-        // cout << error << "\n";
+        cout << error << "\n";
         return 1;
     }
 
