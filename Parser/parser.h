@@ -1,6 +1,31 @@
 #pragma once
 #include "../Lexer/Lexer.h"
 #include "astnodes.h"
+std::map<TokenType, string> tokenNames = {
+    {Identifier, "id"},
+    {Integer, "int"},
+    {Real, "real"},
+    {Plus, "Plus"},
+    {Minus, "Minus"},
+    {Times, "Times"},
+    {Div, "IntDiv"},
+    {GreaterThan, "GreaterThan"},
+    {GreaterThanOrEqual, "GreaterThanOrEqual"},
+    {LessThan, "LessThan"},
+    {LessThanOrEqual, "LessThanOrEqual"},
+    {Equal, "Equal"},
+    {Assign, "Assign"},
+    {LeftParenthesis, "LeftParenthesis"},
+    {RightParenthesis, "RightParenthesis"},
+    {LeftBracket, "LeftBracket"},
+    {RightBracket, "RightBracket"},
+    {Apostrophe, "Apostrophe"},
+    {EndOfInput, "EndOfInput"},
+    {Semicolon, "Semicolon"},
+    {Colon, "Colon"},
+    {Comma, "Comma"},
+    {Arrow, "Arrow"}
+};
 class Parser {
   private:
     Lexer lexer;
@@ -9,8 +34,14 @@ class Parser {
     Parser (std::string input) : lexer(input) {
       currentToken = lexer.nextToken();
     }
+    std::string getName(TokenType tokenType) {
+        for (const std::pair<std::string, TokenType> p : lexer.keywords) {
+            if (p.second == tokenType) return p.first;
+        }
+        return tokenNames[tokenType];
+    }
     void error (TokenType expected, TokenType received) {
-        std::string error = "Invalid syntax: Expected " + std::to_string(expected) + ", got " + std::to_string(received) + " " + currentToken.value;
+        std::string error = "Invalid syntax: Expected " + getName(expected) + ", got " + getName(received) + ": " + currentToken.value;
         throw error;
     } 
     void eat (TokenType type) {

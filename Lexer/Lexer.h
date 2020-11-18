@@ -9,13 +9,14 @@
 #include <algorithm>
 using namespace CharUtils;
 using namespace std;
-
 class Lexer {
   private:
     string input;
     unsigned int position = 0;
     int line = 0;
     int column = 0;
+   
+  public:
     map<string, TokenType> keywords = {
         {"main", MAIN},
         {"int", INT},
@@ -27,7 +28,6 @@ class Lexer {
         {"string", STRING},
         {"return", RETURN}
     };
-  public:
     Lexer(string inputPass) {
       input = inputPass;
     }
