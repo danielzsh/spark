@@ -22,7 +22,7 @@ main() {
 		a = foo(a);
 		b = -13+4.5;
 		b = retStatments(b);
-		test = 'The value of a is {a}, and the value of b is {b}';
+		test = 'The value of a is {a}, and the value of b is {b} ' + 'some concatenated message';
 		multi = 'a*b={a*b}';
 		print('{test}');
 		print('{multi}');
