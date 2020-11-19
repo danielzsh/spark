@@ -52,6 +52,7 @@ namespace interpreter {
 				// cout << funcCall->type << endl;
 				return funcCall->type;
 			}
+			else if (node->print() == "String") return "String";
 		}
 		template<class T>
 		T visit(AstNode* node) {
@@ -91,7 +92,9 @@ namespace interpreter {
 				}
 			}
 			else if constexpr (std::is_same_v<T, std::string>) {
-				return visit_Var<T>(*static_cast<Var*>(node));
+				if (node->print() == "Var")return visit_Var<T>(*static_cast<Var*>(node));
+				else if (node->print() == "String") return visit_String(*static_cast<String*>(node));
+				else if (node->print() == "BinOp") return visit_BinOp <std::string>(*static_cast<BinOp*>(node));
 			}
 			else {
 				std::string error("Type not recognized");
@@ -206,6 +209,29 @@ namespace interpreter {
 					throw error;
 				}
 			}
+			else if constexpr (std::is_same_v<T, std::string>) {
+				if (binOp.op.type == Plus) return visit<std::string>(binOp.left) + visit<std::string>(binOp.right);
+				else if (binOp.op.type == Times) {
+					if (getType(binOp.left) == "int") {
+						int times = visit<int>(binOp.left);
+						std::string res = "";
+						std::string toAdd = visit<std::string>(binOp.right);
+						for (int i = 0; i < times; i++) {
+							res += toAdd;
+						}
+						return res;
+					}
+					else {
+						int times = visit<int>(binOp.right);
+						std::string res = "";
+						std::string toAdd = visit<std::string>(binOp.left);
+						for (int i = 0; i < times; i++) {
+							res += toAdd;
+						}
+						return res;
+					}
+				}
+			}
 			else {
 				std::string error("Type not recognized");
 				throw error;
@@ -274,7 +300,7 @@ namespace interpreter {
 				return;
 			}
 			else if (type == "string") {
-				std::string res = visit_String(*static_cast<String*>(assign.right));
+				std::string res = visit<std::string>(static_cast<String*>(assign.right));
 				ActivationRecord& ar = stack.peek();
 				ar[var_name] = res;
 				return;

@@ -243,10 +243,6 @@ class Parser {
     }
     AstNode* parseExpression() {
       AstNode* node;
-      if (currentToken.type == Apostrophe) {
-          node = new String(parseString());
-          return node;
-      }
       node = parseTerm();
       while (currentToken.type == Plus || currentToken.type == Minus) {
         Token token = currentToken;
@@ -271,7 +267,11 @@ class Parser {
     AstNode* parseFactor() {
       AstNode* node;
       Token token = currentToken;
-      if (token.type == Plus) {
+      if (currentToken.type == Apostrophe) {
+          node = new String(parseString());
+          return node;
+      }
+      else if (token.type == Plus) {
         eat(Plus);
         AstNode* factor = parseFactor();
         node = new UnOp(token, factor);
