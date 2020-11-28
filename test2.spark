@@ -1,0 +1,10 @@
+main() {
+	vars: string: mood;
+	def print_mood(string: mood) {
+		program:
+			print('I am {mood}');
+	}
+	program:
+		mood = 'happy';
+		print_mood(mood);
+}
