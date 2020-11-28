@@ -10,3 +10,7 @@ In the Artifacts section, click on the os that you use: a .zip file should start
 Navigate to your project folder and do Shift+Right-click. Press "Open PowerShell window here." Now run ./spark \<your file\>. Voila!
 ### Running: Mac
 Open Terminal and drag and drop your project folder into the terminal. This should navigate the terminal to your project folder. Now, just run ./spark \<your file\>, and it should run your code.
+#### Troubleshooting
+If you get an error that says "Access Denied", run chmod +x spark. In addition, if your computer warns you about malware, [this link](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unidentified-developer-mh40616/mac) might be of use. If you have any other issues, please open an issue in this GitHub repository. Instead of dragging and dropping the folder into the terminal window, you can also use the "cd" command to navigate to your folder. For example, to navigate to your Downloads folder, you would run `cd ~/Downloads`
+#### Tips
+To create a file, run `touch <filename>` in the terminal. 
