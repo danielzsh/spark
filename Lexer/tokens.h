@@ -46,7 +46,8 @@ enum TokenType {
     // Miscellaneous
     Colon,
     Comma,
-    Arrow
+    Arrow,
+    Misc
 };
 
 class Token {

@@ -1,0 +1,7 @@
+main() {
+	vars:
+		string: works_string;
+	program:
+		works_string = 'works\#';
+		print('{works_string}');
+}
