@@ -72,6 +72,13 @@ class Lexer {
         Token token(EndOfInput, "", line, column);
         return token;
       }
+      if (input[position] == '\\') {
+          position++;
+          std::string s(1, input[position]);
+          Token token(Misc, s, line, column);
+          position++;
+          return token;
+      }
       if (input[position] == '#') {
           position++;
           column++;
