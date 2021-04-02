@@ -362,7 +362,7 @@ namespace interpreter {
 				cout << error << endl;
 				return;
 			}
-			SematicAnalyzer symtabBuilder("global", 1);
+			SemanticAnalyzer symtabBuilder("global", 1);
 			//std::// cout << "Building symtab...\n";
 			try {
 				symtabBuilder.visit(&p);

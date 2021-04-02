@@ -50,11 +50,11 @@ public:
 		return rep;
 	}
 };
-class SematicAnalyzer {
+class SemanticAnalyzer {
 public:
 	ScopedSymbolTable symtab;
 	ScopedSymbolTable& currentScope;
-	SematicAnalyzer(std::string name, int level) : symtab("global", 1), currentScope(symtab) {
+	SemanticAnalyzer(std::string name, int level) : symtab("global", 1), currentScope(symtab) {
 	}
 	void visit(AstNode* node) {
 		if (node == NULL) return;
