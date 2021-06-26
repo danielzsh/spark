@@ -22,6 +22,29 @@
                 "isDefault": true
             },
             "detail": "Generated task by Debugger"
+        },
+        {
+            "type": "cppbuild",
+            "label": "g++ build",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-g",
+                "main.cpp",
+                "-o",
+                "${workspaceFolder}/spark",
+                "-std=c++17"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Generated task by Debugger"
         }
     ],
     "version": "2.0.0"
