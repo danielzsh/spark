@@ -53,6 +53,7 @@ namespace interpreter {
 				return funcCall->type;
 			}
 			else if (node->print() == "String") return "String";
+			else if (node->print() == "Boolean") return "Boolean";
 		}
 		template<class T>
 		T visit(AstNode* node) {
@@ -96,6 +97,11 @@ namespace interpreter {
 				else if (node->print() == "String") return visit_String(*static_cast<String*>(node));
 				else if (node->print() == "BinOp") return visit_BinOp <std::string>(*static_cast<BinOp*>(node));
 			}
+			else if constexpr (std::is_same_v<T, bool>) {
+				if (node->print() == "Boolean") {
+					return visit_Bool(*static_cast<Boolean*>(node));
+				}
+			}
 			else {
 				std::string error("Type not recognized");
 				throw error;
@@ -103,6 +109,9 @@ namespace interpreter {
 		}
 		void visit_FunctionDecl(FunctionDecl functionDecl) {
 
+		}
+		bool visit_Bool(Boolean b) {
+			return b.val;
 		}
 		template <typename T = void>
 		T visit_FunctionCall(FunctionCall functionCall) {
@@ -284,6 +293,7 @@ namespace interpreter {
 		}
 		void visit_Assign(class Assign assign) {
 			std::string type = getType(&assign.var);
+			// cout << type << endl;
 			std::string var_name = assign.var.value;
 			// cout << stack.records.size() << endl;
 			if (type == "int") {
@@ -301,6 +311,12 @@ namespace interpreter {
 			}
 			else if (type == "string") {
 				std::string res = visit<std::string>(static_cast<String*>(assign.right));
+				ActivationRecord& ar = stack.peek();
+				ar[var_name] = res;
+				return;
+			}
+			else if (type == "bool") {
+				bool res = visit<bool>(static_cast<Boolean*>(assign.right));
 				ActivationRecord& ar = stack.peek();
 				ar[var_name] = res;
 				return;

@@ -16,6 +16,7 @@ public:
 		define(new BuiltinTypeSymbol("real"));
 		define(new BuiltinTypeSymbol("string"));
 		define(new BuiltinTypeSymbol("void"));
+		define(new BuiltinTypeSymbol("bool"));
 		scope_name = name;
 		scope_level = level;
 	}

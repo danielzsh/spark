@@ -3,6 +3,7 @@ main() {
 		int: a, c, d;
 		real: b;
 		string: test, multi;
+		bool: yes;
 	def foo (int: a) -> int {
 		def sub (int: a) {
 			program:
@@ -19,6 +20,7 @@ main() {
 	} -> return subtract(a)
 	program: #this is a comment#
 		a = 1*1+4//-2;
+		yes = true;
 		a = foo(a);
 		b = -13+4.5;
 		b = retStatments(b);

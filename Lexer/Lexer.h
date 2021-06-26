@@ -22,11 +22,14 @@ class Lexer {
         {"int", INT},
         {"real", REAL},
         {"vars", VARS},
+        {"bool", BOOL},
         {"program", PROGRAM},
         {"def", FUNCTION},
         {"print", PRINT},
         {"string", STRING},
-        {"return", RETURN}
+        {"return", RETURN},
+        {"true", TRUE},
+        {"false", FALSE}
     };
     Lexer(string inputPass) {
       input = inputPass;

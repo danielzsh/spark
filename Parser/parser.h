@@ -100,7 +100,7 @@ class Parser {
         if (currentToken.type == VARS) {
             eat(VARS);
             eat(Colon);
-            while (currentToken.type == INT || currentToken.type == REAL || currentToken.type == STRING)
+            while (currentToken.type == INT || currentToken.type == REAL || currentToken.type == STRING || currentToken.type == BOOL)
             {
                 std::vector<VarDecl> line = parseVarDeclarations();
                 eat(Semicolon);
@@ -112,7 +112,7 @@ class Parser {
     }
     std::vector<VarDecl> parseFormalParameters() {
         std::vector<VarDecl> decl;
-        while (currentToken.type == INT || currentToken.type == REAL || currentToken.type == STRING)
+        while (currentToken.type == INT || currentToken.type == REAL || currentToken.type == STRING || currentToken.type == BOOL)
             {
                 std::vector<VarDecl> line = parseVarDeclarations();
                 decl.insert(decl.end(), line.begin(), line.end());
@@ -196,6 +196,7 @@ class Parser {
         Token token = currentToken;
         if (currentToken.type == INT) eat(INT);
         else if (currentToken.type == REAL) eat(REAL);
+        else if (currentToken.type == BOOL) eat(BOOL);
         else eat(STRING);
         Type node = Type(token);
         return node;
@@ -264,11 +265,24 @@ class Parser {
       
       return node;
     }
+    Boolean parseBoolean() {
+        Token t = currentToken;
+        if (currentToken.type == TRUE) eat(TRUE);
+        else eat(FALSE);
+        Boolean b;
+        if (t.type == TRUE) b.val = true;
+        else b.val = false;
+        return b;
+    }
     AstNode* parseFactor() {
       AstNode* node;
       Token token = currentToken;
       if (currentToken.type == Apostrophe) {
           node = new String(parseString());
+          return node;
+      }
+      else if (currentToken.type == TRUE || currentToken.type == FALSE) {
+          node = new Boolean(parseBoolean());
           return node;
       }
       else if (token.type == Plus) {

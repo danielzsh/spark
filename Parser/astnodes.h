@@ -43,6 +43,13 @@ public:
         return "String";
     }
 };
+class Boolean : public AstNode {
+public:
+    bool val;
+    std::string print() {
+        return "Boolean";
+    }
+};
 class Num : public AstNode {
   private:
     Token token;
