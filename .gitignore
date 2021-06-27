@@ -6,3 +6,4 @@ Debug/*
 spark.exe
 *.obj
 main.exe
+backup.zip
