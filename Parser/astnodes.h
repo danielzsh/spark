@@ -107,6 +107,7 @@ class Var : public AstNode {
     return s;
   } 
 };
+
 class Assign : public AstNode {
   public:
     Var var;
@@ -176,6 +177,18 @@ public:
     std::string print() {
         std::string s = "Block";
         return s;
+    }
+};
+class If : public AstNode {
+public:
+    AstNode* b;
+    Block body;
+    If(AstNode* b, Block body) {
+        this->b = b;
+        this->body = body;
+    }
+    std::string print() {
+        return "If";
     }
 };
 class FunctionSymbol : public Symbol {

@@ -216,10 +216,23 @@ class Parser {
         else node = new class Assign(parseAssignment());
         return node;
       }
+      else if (currentToken.type == IF) {
+          node = new If(parseIf());
+          return node;
+      }
       else {
         node = new NoOp();
         return node;
       }
+    }
+    If parseIf() {
+        eat(IF);
+        eat(Colon);
+        AstNode* condition = parseExpression();
+        eat(Arrow);
+        Block body = parseBlock();
+        If node(condition, body);
+        return node;
     }
     Print parsePrint() {
         Token token = currentToken;

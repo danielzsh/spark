@@ -7,7 +7,7 @@ enum class ARType {
 	PROGRAM,
 	FUNCTION
 };
-using value = std::variant<int, double, std::string>;
+using value = std::variant<int, double, std::string, bool>;
 class ActivationRecord {
 public:
 	std::string name;

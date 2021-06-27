@@ -4,7 +4,7 @@ main() {
 		real: b;
 		string: test, multi;
 		bool: yes;
-	def foo (int: a) -> int {
+	def foo (int: a; bool: b;) -> int {
 		def sub (int: a) {
 			program:
 				print('{a}');		
@@ -21,7 +21,12 @@ main() {
 	program: #this is a comment#
 		a = 1*1+4//-2;
 		yes = true;
-		a = foo(a);
+		a = foo(a, yes);
+		if: yes -> {
+			program:
+				print('if statements work now');
+		}
+		}
 		b = -13+4.5;
 		b = retStatments(b);
 		test = 'The value of a is {a}, and the value of b is {b} ' + 'some concatenated message ' * 2;

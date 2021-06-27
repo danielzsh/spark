@@ -29,7 +29,8 @@ class Lexer {
         {"string", STRING},
         {"return", RETURN},
         {"true", TRUE},
-        {"false", FALSE}
+        {"false", FALSE},
+        {"if", IF}
     };
     Lexer(string inputPass) {
       input = inputPass;

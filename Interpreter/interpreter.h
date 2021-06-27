@@ -64,6 +64,9 @@ namespace interpreter {
 				else if (node->print() == "Print") visit_Print(*static_cast<Print*>(node));
 				else if (node->print() == "FunctionDecl") visit_FunctionDecl(*static_cast<FunctionDecl*>(node));
 				else if (node->print() == "FunctionCall") visit_FunctionCall(*static_cast<FunctionCall*>(node));
+				else if (node->print() == "If") {
+					visit_If(*static_cast<If*>(node));
+				}
 				else {
 					std::string error = "Error: void operation not recognized";
 					throw error;
@@ -101,11 +104,18 @@ namespace interpreter {
 				if (node->print() == "Boolean") {
 					return visit_Bool(*static_cast<Boolean*>(node));
 				}
+				else if (node->print() == "Var") {
+					return visit_Var<bool>(*static_cast<Var*>(node));
+				}
 			}
 			else {
 				std::string error("Type not recognized");
 				throw error;
 			}
+		}
+		void visit_If(If node) {
+			if (!visit<bool>(node.b)) return;
+			visit_Block(node.body);
 		}
 		void visit_FunctionDecl(FunctionDecl functionDecl) {
 
@@ -357,6 +367,10 @@ namespace interpreter {
 						std::string error("Wanted string, got " + type);
 						throw error;
 					}
+				}
+				else if constexpr (std::is_same_v<T, bool>) {
+					std::string type = getType(&var);
+					if (type == "bool") return std::get<bool>(ar[var.value]);
 				}
 				else {
 					std::string error("Var type invalid");

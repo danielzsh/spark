@@ -46,6 +46,7 @@ enum TokenType {
     FUNCTION,
     PRINT,
     RETURN,
+    IF,
     // Miscellaneous
     Colon,
     Comma,

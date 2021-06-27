@@ -1,0 +1,10 @@
+main() {
+	vars:
+		bool: yes;
+	program:
+		yes = true;
+		if: yes -> {
+			program:
+				print('if statements rock');
+		}
+}
