@@ -12,6 +12,7 @@
 #include "./SymbolTable.h"
 bool isComparison(TokenType t) {
 	if (t == Equal || t == GreaterThan || t == GreaterThanOrEqual || t == LessThan || t == LessThanOrEqual) return true;
+	else return false;
 }
 namespace interpreter {
 	class Interpreter
@@ -29,8 +30,8 @@ namespace interpreter {
 		std::string getType(AstNode* node) {
 			if (node->print() == "BinOp") {
 				BinOp* binOp = static_cast<BinOp*>(node);
-				if (binOp->op.type == IntDiv) return "int";
-				else if (isComparison(binOp->op.type)) return "bool";
+				if (isComparison(binOp->op.type)) return "bool";
+				else if (binOp->op.type == IntDiv) return "int";
 				else return "real";
 			}
 			else if (node->print() == "Var") {
@@ -173,6 +174,7 @@ namespace interpreter {
 		std::string visit_String(String str) {
 			int expr_index = 0;
 			std::string result = "";
+			// cout << str.raw << endl;
 			for (int i = 0; i < str.raw.size(); i++) {
 				// cout << str.raw[i];
 				if (str.raw[i] == '{') {
@@ -276,17 +278,20 @@ namespace interpreter {
 				}
 				else if (binOp.op.type == LessThanOrEqual) {
 					if (getType(binOp.left) == "int") {
-						return visit<int>(binOp.left) <= visit<int>(binOp.right);
+						if (getType(binOp.right) == "int") return visit<int>(binOp.left) <= visit<int>(binOp.right);
+						if (getType(binOp.right) == "real") return visit<int>(binOp.left) <= visit<double>(binOp.right);
 					}
 					else if (getType(binOp.left) == "real") {
-						return visit<double>(binOp.left) <= visit<double>(binOp.right);
+						if (getType(binOp.right) == "real") return visit<double>(binOp.left) <= visit<double>(binOp.right);
+						if (getType(binOp.right) == "int") return visit<double>(binOp.left) <= visit<int>(binOp.right);
 					}
 					std::string error("Cannot compare " + getType(binOp.left) + " with " + getType(binOp.right) + " with <=.");
 					throw error;
 				}
 				else if (binOp.op.type == LessThan) {
 					if (getType(binOp.left) == "int") {
-						return visit<int>(binOp.left) < visit<int>(binOp.right);
+						if (getType(binOp.right) == "int") return visit<int>(binOp.left) < visit<int>(binOp.right);
+						if (getType(binOp.right) == "real") return visit<int>(binOp.left) < visit<double>(binOp.right);
 					}
 					else if (getType(binOp.left) == "real") {
 						return visit<double>(binOp.left) < visit<double>(binOp.right);

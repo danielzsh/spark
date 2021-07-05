@@ -27,10 +27,9 @@ main() {
 		if: yes -> {
 			program:
 				print('if statements work now');
-		}
-		}
+		};
 		test = 'The value of a is {a}, and the value of b is {b} ' + 'some concatenated message ' * 2;
-		multi = 'a*b={a*b}';
+		multi = 'a*b={a*b}.';
 		print('{test}');
 		print('{multi}');
  		d = 40;

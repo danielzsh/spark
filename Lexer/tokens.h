@@ -51,6 +51,7 @@ enum TokenType {
     Colon,
     Comma,
     Arrow,
+    Period,
     Misc
 };
 

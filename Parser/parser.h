@@ -79,6 +79,7 @@ class Parser {
         eat(Apostrophe);
         while (currentToken.type != Apostrophe) {
             str.raw += currentToken.value;
+            // cout << currentToken.value;
             if (currentToken.type == LeftBracket) {
                 eat(LeftBracket);
                 str.append(parseExpression());

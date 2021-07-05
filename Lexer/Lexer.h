@@ -144,8 +144,14 @@ class Lexer {
           Token token(Apostrophe, "\'", line, column);
           return token;
       }
-        std::string error = "Unrecognized: " + input[position];
-        throw error;
+      if (character == '.') {
+          position++;
+          column++;
+          Token token(Period, ".", line, column);
+          return token;
+      }
+       std::string error = "Unrecognized: " + input[position];
+       throw error;
     }
     Token recognizeParenthesis() {
       char character = input[position];
