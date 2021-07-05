@@ -10,6 +10,9 @@
 #include <cassert>
 #include "./Stack.h"
 #include "./SymbolTable.h"
+bool isComparison(TokenType t) {
+	if (t == Equal || t == GreaterThan || t == GreaterThanOrEqual || t == LessThan || t == LessThanOrEqual) return true;
+}
 namespace interpreter {
 	class Interpreter
 	{
@@ -27,6 +30,7 @@ namespace interpreter {
 			if (node->print() == "BinOp") {
 				BinOp* binOp = static_cast<BinOp*>(node);
 				if (binOp->op.type == IntDiv) return "int";
+				else if (isComparison(binOp->op.type)) return "bool";
 				else return "real";
 			}
 			else if (node->print() == "Var") {
@@ -52,8 +56,8 @@ namespace interpreter {
 				// cout << funcCall->type << endl;
 				return funcCall->type;
 			}
-			else if (node->print() == "String") return "String";
-			else if (node->print() == "Boolean") return "Boolean";
+			else if (node->print() == "String") return "string";
+			else if (node->print() == "Boolean") return "bool";
 		}
 		template<class T>
 		T visit(AstNode* node) {
@@ -106,6 +110,9 @@ namespace interpreter {
 				}
 				else if (node->print() == "Var") {
 					return visit_Var<bool>(*static_cast<Var*>(node));
+				}
+				else if (node->print() == "BinOp") {
+					return visit_BinOp<bool>(*static_cast<BinOp*>(node));
 				}
 			}
 			else {
@@ -249,6 +256,63 @@ namespace interpreter {
 						}
 						return res;
 					}
+				}
+			}
+			else if constexpr (std::is_same_v<T, bool>) {
+				if (binOp.op.type == Equal) {
+					if (getType(binOp.left) == "bool") {
+						return visit<bool>(binOp.left) == visit<bool>(binOp.right);
+					}
+					else if (getType(binOp.left) == "int") {
+						return visit<int>(binOp.left) == visit<int>(binOp.right);
+					}
+					else if (getType(binOp.left) == "real") {
+						return visit<double>(binOp.left) == visit<double>(binOp.right);
+					}
+					else {
+						std::string error("Cannot compare " + getType(binOp.left) + " with " + getType(binOp.right) + " with Equal.");
+						throw error;
+					}
+				}
+				else if (binOp.op.type == LessThanOrEqual) {
+					if (getType(binOp.left) == "int") {
+						return visit<int>(binOp.left) <= visit<int>(binOp.right);
+					}
+					else if (getType(binOp.left) == "real") {
+						return visit<double>(binOp.left) <= visit<double>(binOp.right);
+					}
+					std::string error("Cannot compare " + getType(binOp.left) + " with " + getType(binOp.right) + " with <=.");
+					throw error;
+				}
+				else if (binOp.op.type == LessThan) {
+					if (getType(binOp.left) == "int") {
+						return visit<int>(binOp.left) < visit<int>(binOp.right);
+					}
+					else if (getType(binOp.left) == "real") {
+						return visit<double>(binOp.left) < visit<double>(binOp.right);
+					}
+					std::string error("Cannot compare " + getType(binOp.left) + " with " + getType(binOp.right) + " with <.");
+					throw error;
+				}
+				else if (binOp.op.type == GreaterThanOrEqual) {
+					if (getType(binOp.left) == "int") {
+						return visit<int>(binOp.left) >= visit<int>(binOp.right);
+					}
+					else if (getType(binOp.left) == "real") {
+						return visit<double>(binOp.left) >= visit<double>(binOp.right);
+					}
+					std::string error("Cannot compare " + getType(binOp.left) + " with " + getType(binOp.right) + " with >=.");
+					throw error;
+				}
+				else if (binOp.op.type == GreaterThan) {
+					if (getType(binOp.left) == "int") {
+						return visit<int>(binOp.left) > visit<int>(binOp.right);
+					}
+					else if (getType(binOp.left) == "real") {
+						return visit<double>(binOp.left) > visit<double>(binOp.right);
+					}
+					std::string error("Cannot compare " + getType(binOp.left) + " with " + getType(binOp.right) + " with >.");
+						throw error;
 				}
 			}
 			else {

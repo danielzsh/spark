@@ -258,21 +258,18 @@ class Parser {
     AstNode* parseExpression() {
       AstNode* node;
       node = parseTerm();
-      while (currentToken.type == Plus || currentToken.type == Minus) {
+      while (currentToken.type == Plus || currentToken.type == Minus || currentToken.type == Equal) {
         Token token = currentToken;
-        if (token.type == Plus) eat(Plus);
-        else if (token.type == Minus) eat(Minus);
+        eat(token.type);
         node = new BinOp(node, token, parseTerm());
       }
       return node;
     }
     AstNode* parseTerm() {
       AstNode* node = parseFactor();
-      while (currentToken.type == Times || currentToken.type == Div || currentToken.type == IntDiv) {
+      while (currentToken.type == Times || currentToken.type == Div || currentToken.type == IntDiv || currentToken.type == GreaterThan || currentToken.type == GreaterThanOrEqual || currentToken.type == LessThan || currentToken.type == LessThanOrEqual) {
         Token token = currentToken;
-        if (token.type == Times) eat(Times);
-        else if (token.type == Div) eat(Div);
-        else if (token.type == IntDiv) eat(IntDiv);
+        eat(token.type);
         node = new BinOp(node, token, parseFactor());
       }
       

@@ -1,7 +1,7 @@
 main() {
  	vars:
-		int: a, c, d;
-		real: b;
+		int: a, b, d;
+		real: c;
 		string: test, multi;
 		bool: yes;
 	def foo (int: a; bool: b;) -> int {
@@ -14,27 +14,27 @@ main() {
 			sub(a);
 			print('Sub completed');	
 	} -> return 1
-	def retStatments(real: a) -> real {
-		def subtract(real: a) -> real {
+	def retStatments(int: a) -> int {
+		def subtract(int: a) -> int {
 		} -> return a - 1
 	} -> return subtract(a)
 	program: #this is a comment#
 		a = 1*1+4//-2;
-		yes = true;
+		b = 12-13;
+		b = retStatments(b);
+		yes = a == b;
 		a = foo(a, yes);
 		if: yes -> {
 			program:
 				print('if statements work now');
 		}
 		}
-		b = -13+4.5;
-		b = retStatments(b);
 		test = 'The value of a is {a}, and the value of b is {b} ' + 'some concatenated message ' * 2;
 		multi = 'a*b={a*b}';
 		print('{test}');
 		print('{multi}');
- 		c = (a - d)//3;
  		d = 40;
+ 		c = (a - d)//3;
 		{
 			program:
 				c = (a - d)//3;
