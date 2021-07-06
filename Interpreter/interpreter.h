@@ -294,27 +294,32 @@ namespace interpreter {
 						if (getType(binOp.right) == "real") return visit<int>(binOp.left) < visit<double>(binOp.right);
 					}
 					else if (getType(binOp.left) == "real") {
-						return visit<double>(binOp.left) < visit<double>(binOp.right);
+						if (getType(binOp.right) == "real" ) return visit<double>(binOp.left) < visit<double>(binOp.right);
+						if (getType(binOp.right) == "int") return visit<double>(binOp.left) < visit<int>(binOp.right);
 					}
 					std::string error("Cannot compare " + getType(binOp.left) + " with " + getType(binOp.right) + " with <.");
 					throw error;
 				}
 				else if (binOp.op.type == GreaterThanOrEqual) {
 					if (getType(binOp.left) == "int") {
-						return visit<int>(binOp.left) >= visit<int>(binOp.right);
+						if (getType(binOp.right) == "int") return visit<int>(binOp.left) >= visit<int>(binOp.right);
+						if (getType(binOp.right) == "real") return visit<int>(binOp.left) >= visit<double>(binOp.right);
 					}
 					else if (getType(binOp.left) == "real") {
-						return visit<double>(binOp.left) >= visit<double>(binOp.right);
+						if (getType(binOp.right) == "real") return visit<double>(binOp.left) >= visit<double>(binOp.right);
+						if (getType(binOp.right) == "int") return visit<double>(binOp.left) >= visit<int>(binOp.right);
 					}
 					std::string error("Cannot compare " + getType(binOp.left) + " with " + getType(binOp.right) + " with >=.");
 					throw error;
 				}
 				else if (binOp.op.type == GreaterThan) {
 					if (getType(binOp.left) == "int") {
-						return visit<int>(binOp.left) > visit<int>(binOp.right);
+						if (getType(binOp.right) == "int") return visit<int>(binOp.left) > visit<int>(binOp.right);
+						if (getType(binOp.right) == "real") return visit<int>(binOp.left) > visit<double>(binOp.right);
 					}
 					else if (getType(binOp.left) == "real") {
-						return visit<double>(binOp.left) > visit<double>(binOp.right);
+						if (getType(binOp.right) == "real") return visit<double>(binOp.left) > visit<double>(binOp.right);
+						if (getType(binOp.right) == "int") return visit<double>(binOp.left) > visit<int>(binOp.right);
 					}
 					std::string error("Cannot compare " + getType(binOp.left) + " with " + getType(binOp.right) + " with >.");
 						throw error;
