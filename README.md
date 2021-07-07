@@ -16,3 +16,6 @@ If you get an error that says "Access Denied", run chmod +x spark. In addition, 
 To create a file, run `touch <filename>` in the terminal. 
 ## Trying to Understand Spark? ## 
 Head over to the [wiki](https://github.com/dantheking-crypto/spark/wiki) to see an example program and a quick intro to spark syntax.
+## Want to Test Spark? ##
+Any testing would be appreciated! I will manually run workflows on development branches every now and then, so watch out for "manually run" workflows. [example](https://prnt.sc/1957lxf)<br>
+If you find any errors, feel free to open an issue for it.
