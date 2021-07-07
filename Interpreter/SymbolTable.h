@@ -72,6 +72,13 @@ public:
 		}
 		else if (node->print() == "String") visit_String(*static_cast<String*>(node));
 		else if (node->print() == "Assign") visit_Assign(*static_cast<class Assign*>(node));
+		else if (node->print() == "If") {
+			visit_If(*static_cast<If*>(node));
+		}
+	}
+	void visit_If(If ifs) {
+		visit_Block(ifs.body);
+		visit(ifs.b);
 	}
 	void visit_String(String str) {
 		for (AstNode* expr : str.expr) visit(expr);

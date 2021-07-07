@@ -13,18 +13,18 @@ main() {
 			print('Delegating print to sub-function: ');
 			sub(a);
 			print('Sub completed');	
-	} -> return 1
+	} -> return -1
 	def retStatments(int: a) -> int {
 		def subtract(int: a) -> int {
 		} -> return a - 1
 	} -> return subtract(a)
 	program: #this is a comment#
 		a = 1*1+4//-2;
-		b = 12-13;
+		b = 12-12;
 		b = retStatments(b);
 		yes = a == b;
 		a = foo(a, yes);
-		if: yes -> {
+		if: a == b -> {
 			program:
 				print('if statements work now');
 		};
@@ -35,7 +35,7 @@ main() {
  		d = 40;
  		c = (a - d)//3;
 		{
-			program:
+			program: 
 				c = (a - d)//3;
 		}
 	}
